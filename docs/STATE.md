@@ -16,7 +16,6 @@
 In priority order. Details live on the PUNCHLIST item.
 
 1. P-001 — end-to-end skill smoke via real headless invocations.
-2. P-002 — exercise `/punchlist:setup` upgrade mode.
 
 **Waiting on maintainer:** nothing.
 

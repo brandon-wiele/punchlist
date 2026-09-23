@@ -19,8 +19,6 @@ move to [`history/punchlist-done.md`](history/punchlist-done.md), and stale `lat
 
 - **P-001** · next · End-to-end smoke of every skill through real headless invocations
   (`claude -p "/punchlist:<skill> …"`) against scratch repos, not just dry-run subagents.
-- **P-002** · next · `/punchlist:setup` **upgrade** mode (re-run with an existing `.punchlist.yml`)
-  has never been exercised; test it and the managed-block re-sync.
 - **P-003** · later · Automated skill regression suite via `claude plugin eval`, replacing hand-run
   dry-run scenarios.
 - **P-004** · later · `lint` could check that `docs/README.md` (tidy's index) lists every current doc
