@@ -6,7 +6,7 @@
 
 ## Snapshot — 2026-09-23
 
-- **Branch:** `main` @ `0000000`, clean. Sessions never push; the maintainer runs `just publish`.
+- **Branch:** `main` @ `c50c669`, clean. Sessions never push; the maintainer runs `just publish`.
 - **Last shipped:** v0.4.0, the first public release.
 - **In flight:** nothing.
 - **Environment:** installed locally as `punchlist@punchlist`. Installs are cached per version (see Verbs).
