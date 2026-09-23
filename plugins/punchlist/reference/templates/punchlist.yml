@@ -1,0 +1,14 @@
+# punchlist plugin config. Formats + meaning: the plugin's reference/formats.md
+docs_dir: {{docs_dir}}
+base_branch: {{base_branch}}
+branch_prefix: punchlist/
+push: never            # never | allowed — whether sessions may push
+owner: {{owner}}       # who "Waiting on" means
+build_log_since: {{date}}   # build-log entries before this are exempt from the length budget
+gates:                 # every command must pass before a unit commits
+{{gates}}
+budgets:
+  state_lines: 120
+  punchlist_lines: 250
+  build_log_entry_lines: 15
+  stale_later_days: 60

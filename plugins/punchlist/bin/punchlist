@@ -1,0 +1,126 @@
+#!/usr/bin/env python3
+"""punchlist — mechanical upkeep for the STATE / PUNCHLIST / history continuity docs.
+
+Usage: punchlist <command> [options]   (run from anywhere inside the project's git repo)
+
+  config              print the resolved .punchlist.yml (defaults filled) as JSON
+  status [--write]    open/done counts; --write regenerates the code-review README roll-up
+  next-id [--bump]    the next free P-ID; --bump advances the counter in PUNCHLIST.md
+  lint                check budgets and consistency; exit 1 on any ERROR
+  compact [--apply]   collapse closed findings, park stale `later` items; shows a diff, writes with --apply
+  docs [--under P] [--json]   evidence for /punchlist:tidy: per-folder summary, or per-file rows under a path
+
+Formats: see reference/formats.md next to this plugin.
+"""
+
+import argparse
+import json
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "lib"))
+
+import punchlist_core as core  # noqa: E402
+
+
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(prog="punchlist", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--root", help="project root (default: git toplevel of the current directory)")
+    commands = parser.add_subparsers(dest="command", required=True)
+    commands.add_parser("config")
+    status_parser = commands.add_parser("status")
+    status_parser.add_argument("--write", action="store_true")
+    status_parser.add_argument("--json", action="store_true")
+    next_parser = commands.add_parser("next-id")
+    next_parser.add_argument("--bump", action="store_true")
+    commands.add_parser("lint")
+    compact_parser = commands.add_parser("compact")
+    compact_parser.add_argument("--apply", action="store_true")
+    docs_parser = commands.add_parser("docs")
+    docs_parser.add_argument("--json", action="store_true")
+    docs_parser.add_argument("--under", help="only files under this path; prints per-file rows instead of the folder summary")
+    args = parser.parse_args(argv)
+
+    try:
+        root = Path(args.root).resolve() if args.root else core.find_root(Path.cwd())
+        if args.command == "config":
+            print(json.dumps(core.load_config(root), indent=2))
+        elif args.command == "status":
+            report = core.status(root)
+            if args.write:
+                readme = root / core.load_config(root)["docs_dir"] / "code-review" / "README.md"
+                if not readme.exists():
+                    print("status --write: no code-review/README.md — nothing to write", file=sys.stderr)
+                else:
+                    changed = core.write_rollup(root)
+                    print("code-review roll-up " + ("updated" if changed else "already current"), file=sys.stderr)
+            if args.json:
+                print(json.dumps(report, indent=2))
+            else:
+                items = report["punchlist"]
+                priorities = ", ".join(f"{count} {name}" for name, count in items["by_priority"].items() if count)
+                print(f"PUNCHLIST: {items['open']} open ({priorities or 'none'}), {items['done']} done, next ID {items.get('next_id')}")
+                findings = report["findings"]
+                if findings["files"]:
+                    print(f"Findings: {findings['open']} open, {findings['closed']} closed")
+                    for entry in findings["files"]:
+                        severities = ", ".join(f"{count} {name}" for name, count in entry["open_by_severity"].items() if count)
+                        print(f"  {entry['file']}: {entry['open']} open ({severities or '-'}), {entry['closed']} closed")
+        elif args.command == "next-id":
+            print(core.next_id(root, bump=args.bump))
+        elif args.command == "lint":
+            found = core.lint(root)
+            for level, path, line, message in found:
+                location = f"{path}:{line}" if line else path
+                print(f"{level} {location} {message}")
+            errors = sum(1 for level, *_ in found if level == "ERROR")
+            warnings = len(found) - errors
+            print(f"lint: {errors} error(s), {warnings} warning(s)", file=sys.stderr)
+            return 1 if errors else 0
+        elif args.command == "compact":
+            changes = core.compact(root)
+            if not changes:
+                print("compact: nothing to do", file=sys.stderr)
+                return 0
+            print(core.render_diff(root, changes), end="")
+            if args.apply:
+                core.apply_changes(root, changes)
+                print(f"compact: wrote {len(changes)} file(s)", file=sys.stderr)
+            else:
+                print("compact: dry run — re-run with --apply to write", file=sys.stderr)
+        elif args.command == "docs":
+            rows = core.docs_inventory(root)
+            if args.under:
+                prefix = args.under.rstrip("/") + "/"
+                rows = [r for r in rows if r["path"].startswith(prefix) or r["path"] == args.under]
+            if args.json:
+                print(json.dumps(rows, indent=2))
+            elif args.under:
+                print(f"{'changed':<10} {'lines':>5} {'in':>3} {'dang':>4} {'gone':>4} {'hist':>4} {'cmts':>4}  path")
+                for r in rows:
+                    print(f"{r['last_changed'] or '-':<10} {r['lines']:>5} {r['inbound']:>3} {len(r['dangling']):>4} {len(r['dangling_removed']):>4} {'yes' if r['in_history'] else '-':>4} {r['commit_mentions']:>4}  {r['path']}{' (managed)' if r['managed'] else ''}")
+            else:
+                folders = {}
+                for r in rows:
+                    folder = str(Path(r["path"]).parent)
+                    f = folders.setdefault(folder, {"files": 0, "lines": 0, "oldest": None, "newest": None, "dangling_files": 0, "removed_refs": 0, "unlinked_history": 0})
+                    f["files"] += 1
+                    f["lines"] += r["lines"]
+                    if r["last_changed"]:
+                        f["oldest"] = min(filter(None, [f["oldest"], r["last_changed"]]))
+                        f["newest"] = max(filter(None, [f["newest"], r["last_changed"]]))
+                    f["dangling_files"] += bool(r["dangling"])
+                    f["removed_refs"] += len(r["dangling_removed"])
+                    f["unlinked_history"] += not r["in_history"] and not r["managed"]
+                print(f"{'files':>5} {'lines':>7} {'oldest':<10} {'newest':<10} {'w/dang':>6} {'gone':>5} {'!hist':>5}  folder")
+                for folder, f in sorted(folders.items()):
+                    print(f"{f['files']:>5} {f['lines']:>7} {f['oldest'] or '-':<10} {f['newest'] or '-':<10} {f['dangling_files']:>6} {f['removed_refs']:>5} {f['unlinked_history']:>5}  {folder}")
+            print("docs: 'in' inbound links · 'dang' refs to missing paths · 'gone' of those, ones that existed in git history · 'hist' mentioned by history/STATE · 'cmts' commit messages naming it · '!hist' files history never mentions. Drill in with --under <folder>.", file=sys.stderr)
+    except core.PunchlistError as error:
+        print(f"punchlist: {error}", file=sys.stderr)
+        return 2
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

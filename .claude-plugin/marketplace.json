@@ -1,0 +1,14 @@
+{
+  "name": "punchlist",
+  "description": "The punchlist plugin: session-continuity docs, handoffs and a backlog workflow for long-running AI-assisted projects.",
+  "owner": {
+    "name": "punchlist contributors"
+  },
+  "plugins": [
+    {
+      "name": "punchlist",
+      "source": "./plugins/punchlist",
+      "description": "Session continuity docs, handoffs and backlog workflow for AI-assisted projects."
+    }
+  ]
+}
