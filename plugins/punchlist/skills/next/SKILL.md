@@ -29,11 +29,12 @@ Run `git status` and `git log --oneline -5`. If tracked files are modified or yo
 
 | Situation | The unit is |
 |---|---|
-| Argument given | That item or finding. If only the owner can do it, say so and stop. |
+| Argument given | That item or finding. If it carries `needs:`, or only the owner can do it, say so and stop. |
 | No argument | The first actionable entry in STATE "Next up"; else the first `now` item in PUNCHLIST order; else the first `next` item |
 | The item is an **umbrella** (points at a code-review Fix-first table) | The first Fix-first row whose findings aren't all closed |
-| Only the owner can do it (a decision, ops, credentials, a live/manual check, a ruling) | **Skip it**, name it in the report, move on |
-| A finding is `needs-ruling:`, or the fix would change a documented contract in CLAUDE.md | Skip it; put the question in the report |
+| Only the owner can do it (formats.md § `needs:` criteria) | **Skip it**: tag it `needs: decision` or `needs: action`, stating the question or task plainly in the item; name it in the report; move on |
+| A choice comes up that doesn't meet those criteria | Decide it, record `Ruling YYYY-MM-DD: …` on the item (or in the spec's Rulings), keep going |
+| A finding is `needs-ruling:`, or the fix would change a documented contract in CLAUDE.md | Skip it; set its Status to `needs-ruling: <question>` if it isn't already; put the question in the report |
 
 State the pick and why in one line, then proceed. Don't ask for confirmation.
 
@@ -71,7 +72,8 @@ Record the SHA of the last code commit (`git rev-parse --short HEAD`). Then:
   When the last row closes, retire it like any P-item.
 - **Partly done:** leave it open and add `(YYYY-MM-DD: <done> <sha or "uncommitted">; <remains>)`.
 - **Anything discovered, deferred, or needing the owner:** create a new item with
-  `$PL next-id --bump`, put it in the right section, and tag it `from: <this ID>`.
+  `$PL next-id --bump`, put it in the right section, and tag it `from: <this ID>`, plus
+  `needs: <kind>` if only the owner can move it.
 - **STATE.md:** refresh the Snapshot with the last *code* commit's SHA (later bookkeeping commits
   don't count), plus Last shipped and In flight. Update "Next up" if its head changed.
 - **Build log + Recent milestones:** only if the unit changed user-visible behavior, a security
@@ -88,7 +90,7 @@ Then `git switch <base_branch> && git merge --ff-only <branch>` and delete the b
 1. **Did:** the ID, what changed, and the SHAs.
 2. **Verified:** the gates and their results, plus anything that can't be verified locally.
 3. **Retired / updated:** which bookkeeping entries moved or changed.
-4. **Needs you:** skipped owner items, open rulings, and new P-items filed.
+4. **Needs you:** items tagged `needs:` or `needs-ruling:` this unit, and new P-items filed.
 5. **Next:** what the next invocation would pick.
 
 ## Common mistakes

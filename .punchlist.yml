@@ -3,7 +3,7 @@ docs_dir: docs
 base_branch: main
 branch_prefix: punchlist/
 push: never            # never | allowed — whether sessions may push
-owner: maintainer      # who "Waiting on" means
+owner: maintainer      # who needs: items wait on
 build_log_since: 2026-09-23   # build-log entries before this are exempt from the length budget
 gates:                 # every command must pass before a unit commits
   - run: just check

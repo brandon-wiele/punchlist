@@ -17,8 +17,6 @@ In priority order. Details live on the PUNCHLIST item.
 
 1. {{next_1}}
 
-**Waiting on {{owner}}:** {{waiting}}
-
 ## Orientation (read before substantive work)
 
 1. `CLAUDE.md` — the agent contract.

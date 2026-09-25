@@ -22,7 +22,8 @@ what to do next. Formats: `../../reference/formats.md`.
 ## 2. Apply the five handoff steps
 
 1. **Deferred, discovered or half-done → P-items.** Get each new ID from `$PL next-id --bump`. Tag it
-   `from:`. Half-done work gets a progress note on its existing item.
+   `from:`, and `needs: decision|action` if only the owner can move it (formats.md criteria).
+   Half-done work gets a progress note on its existing item.
 2. **Finished → retire.** Only if the work's commits passed the `.punchlist.yml` gates: run them now
    if this session didn't. A failing gate means it isn't done; record that in In flight. Move the item
    to `history/punchlist-done.md` under its section heading, followed by its own line
@@ -36,7 +37,7 @@ what to do next. Formats: `../../reference/formats.md`.
    - Last shipped
    - In flight
 
-   Order Next up as formats.md says (`now` first, then what unblocks most), naming items by ID. Update the "Waiting on" line. Roll Recent milestones to the
+   Order Next up as formats.md says (`now` first, then what unblocks most), naming items by ID; items tagged `needs:` stay out of it. Roll Recent milestones to the
    newest ~8. Move out anything that isn't *position*: backlog goes to PUNCHLIST, narrative to the
    build log.
 5. **Mid-flight work.** If a branch or uncommitted change remains, the Snapshot's In flight must

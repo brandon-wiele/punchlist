@@ -25,8 +25,9 @@ argument-hint: "<what to capture>"
    what is wrong or wanted, and where. If the premise doesn't hold yet (e.g. there's no UI to add a
    dialog to), say that instead of pretending. If an add is abandoned after `--bump`, the burned ID
    stays unused; never reuse it.
-5. If it's `now` and belongs ahead of STATE's current "Next up" head, add it to "Next up". If only the
-   owner can do it, add it to the "Waiting on" line.
+5. If only the owner can move it, tag it `needs: decision` or `needs: action` (formats.md § `needs:`
+   has the criteria) and keep it out of Next up. Otherwise, if it's `now` and belongs ahead of STATE's
+   current "Next up" head, add it to "Next up".
 6. `$PL lint`; fix any ERROR. If the working tree has no other changes, commit as
    `docs(punchlist): add P-### <short>` (for several items, `add P-###, P-### …`). Otherwise leave the
    edit uncommitted and say so, so it isn't tangled into someone's in-progress work.

@@ -64,8 +64,9 @@ Write `<docs>/code-review/README.md` from `review-readme.md`:
   `- **P-###** · now · Work the code-review Fix-first list — <docs>/code-review/README.md.`
 - Findings stay in their own files. **Don't copy them into PUNCHLIST.** Promote a finding into its
   own P-item only if it's feature-sized.
-- Put the umbrella at the top of STATE "Next up" unless something is blocking. Add owner rulings to
-  the "Waiting on" line.
+- Put the umbrella at the top of STATE "Next up" unless something is blocking. Findings that need an
+  owner ruling carry `Status: needs-ruling: <question>`; that status is the record, so don't list
+  them in STATE.
 - `$PL lint`, fix every ERROR, and commit as `docs(code-review): <date> whole-codebase review
   (<N> findings)`.
 

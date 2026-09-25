@@ -30,11 +30,13 @@ DEFAULT_CONFIG = {
         "punchlist_lines": 250,
         "build_log_entry_lines": 15,
         "stale_later_days": 60,
+        "triage_after_days": 30,
     },
 }
 
 PRIORITIES = ("now", "next", "later")
 SEVERITIES = ("critical", "high", "medium", "low", "nit")
+NEEDS_KINDS = ("decision", "action")
 
 COUNTER_RE = re.compile(r"Next free ID: \*\*P-(\d+)\*\*")
 ITEM_RE = re.compile(r"^- \*\*(P-\d+)\*\* · (\w+) · ")
@@ -46,6 +48,7 @@ SNAPSHOT_SHA_RE = re.compile(r"\*\*Branch:\*\*.*?@ `([0-9a-f]{7,40})`")
 BUILD_ENTRY_RE = re.compile(r"^### (\d{4}-\d{2}-\d{2})")
 ANY_ITEM_START_RE = re.compile(r"^- \*\*(P-\d+)\*\*")
 ANY_ID_RE = re.compile(r"\bP-(\d{3,})\b")
+NEEDS_RE = re.compile(r"`needs: ([^`]*)`")
 MAX_ITEM_LINES = 5  # the item line + up to 3 context lines + a progress note
 ROLLUP_BEGIN = "<!-- punchlist:status:begin -->"
 ROLLUP_END = "<!-- punchlist:status:end -->"
@@ -192,6 +195,7 @@ def parse_punchlist(text: str) -> dict:
     for item in items:
         while item["end"] > item["start"] + 1 and not lines[item["end"] - 1].strip():
             item["end"] -= 1
+        item["needs"] = [kind.strip() for kind in NEEDS_RE.findall("".join(lines[item["start"] : item["end"]]))]
     return {"counter": counter, "counter_line": counter_line, "items": items, "lines": lines}
 
 
@@ -428,6 +432,11 @@ def lint(root: Path, age_days: Callable | None = None) -> list:
             if item["id"] in open_ids:
                 add("ERROR", punchlist, item["start"] + 1, f"duplicate ID {item['id']}")
             open_ids[item["id"]] = item
+            for kind in item["needs"]:
+                if kind not in NEEDS_KINDS:
+                    add("ERROR", punchlist, item["start"] + 1, f"{item['id']}: unknown `needs:` kind '{kind}' — use one of {', '.join(NEEDS_KINDS)}")
+            if len(item["needs"]) > 1:
+                add("ERROR", punchlist, item["start"] + 1, f"{item['id']} has {len(item['needs'])} `needs:` markers — keep one")
             if item["priority"] not in PRIORITIES:
                 add("ERROR", punchlist, item["start"] + 1, f"{item['id']}: priority '{item['priority']}' is not now/next/later")
             elif item["priority"] == "later":
@@ -452,7 +461,11 @@ def lint(root: Path, age_days: Callable | None = None) -> list:
                 add("WARN", punchlist, item["start"] + 1, f"{item['id']} is {item['end'] - item['start']} lines; keep items to ≤ {MAX_ITEM_LINES} and link out")
 
     if state.exists() and punchlist.exists():
-        for number, line in _next_up_lines(state.read_text()):
+        state_text = state.read_text()
+        for number, line in enumerate(state_text.splitlines()):
+            if line.startswith("**Waiting on"):
+                add("WARN", state, number + 1, "legacy 'Waiting on' line — tag those items `needs: decision|action` in PUNCHLIST and delete the line")
+        for number, line in _next_up_lines(state_text):
             if line.startswith("**Waiting on"):
                 continue
             for match in ANY_ID_RE.finditer(line):
@@ -461,6 +474,8 @@ def lint(root: Path, age_days: Callable | None = None) -> list:
                     add("ERROR", state, number + 1, f"Next up lists {item_id}, which is done — refresh Next up")
                 elif item_id not in open_ids:
                     add("WARN", state, number + 1, f"Next up lists {item_id}, which isn't an open PUNCHLIST item")
+                elif open_ids[item_id]["needs"]:
+                    add("WARN", state, number + 1, f"Next up lists {item_id}, which needs the owner (`needs: {open_ids[item_id]['needs'][0]}`) — sessions will skip it")
 
     if state.exists():
         snapshot = SNAPSHOT_SHA_RE.search(state.read_text())

@@ -85,6 +85,28 @@ STATE_TMPL = textwrap.dedent(
     """
 )
 
+NEEDS_PUNCHLIST = textwrap.dedent(
+    """\
+    # PUNCHLIST
+
+    - **ID** — `P-###`, never reused, never renumbered. Next free ID: **P-010**.
+
+    ## Bugs
+
+    - **P-001** · now · Login email never sends.
+
+    ## Features
+
+    - **P-002** · next · Export to CSV.
+    - **P-005** · next · Pick the CSV delimiter for EU locales. `needs: decision`
+    - **P-003** · later · Dark mode.
+
+    ## Ops / manual
+
+    - **P-006** · next · Rotate the SMTP credentials in production. `needs: action`
+    """
+)
+
 
 def git(root, *args):
     return subprocess.run(["git", "-C", str(root), *args], check=True, capture_output=True, text=True).stdout.strip()
@@ -154,6 +176,7 @@ class YamlSubsetTest(unittest.TestCase):
             self.assertEqual(config["budgets"]["state_lines"], 50)
             self.assertEqual(config["budgets"]["punchlist_lines"], 250)
             self.assertEqual(config["push"], "never")
+            self.assertEqual(config["budgets"]["triage_after_days"], 30)
         finally:
             fixture.close()
 
@@ -177,6 +200,21 @@ class ParsingTest(unittest.TestCase):
         self.assertTrue(findings["API-003"]["closed"])
         self.assertTrue(findings["API-003"]["collapsed"])
         self.assertFalse(findings["API-004"]["closed"])  # "open — RULED" is still open
+
+    def test_needs_marker_is_parsed_from_anywhere_in_the_item(self):
+        text = NEEDS_PUNCHLIST.replace("Export to CSV.\n", "Export to CSV.\n  Blocked on the format question. `needs: decision`\n")
+        items = {item["id"]: item for item in core.parse_punchlist(text)["items"]}
+        self.assertEqual(items["P-001"]["needs"], [])
+        self.assertEqual(items["P-002"]["needs"], ["decision"])  # marker on a continuation line
+        self.assertEqual(items["P-005"]["needs"], ["decision"])
+        self.assertEqual(items["P-006"]["needs"], ["action"])
+
+    def test_manual_and_dropped_lines_count_as_closed(self):
+        done = DONE + (
+            "- **P-007** · later · Publish to the marketplace.\n  — DONE 2026-09-25 (manual): listed.\n"
+            "- **P-008** · later · Old idea.\n  — DROPPED 2026-09-25: superseded by P-002.\n"
+        )
+        self.assertEqual(core.parse_done_ids(done), {"P-004", "P-007", "P-008"})
 
 
 class StatusTest(unittest.TestCase):
@@ -308,6 +346,42 @@ class LintConsistencyTest(unittest.TestCase):
         fixture = ProjectFixture(punchlist=PUNCHLIST.replace("P-005", "P-007") + long_item)
         try:
             self.assertTrue(any(level == "WARN" and "P-006" in m and "lines" in m for level, m in self.lint_messages(fixture)))
+        finally:
+            fixture.close()
+
+
+class NeedsLintTest(unittest.TestCase):
+    def lint_messages(self, fixture):
+        return [(level, m) for level, _p, _l, m in core.lint(fixture.root, age_days=lambda *_: 0)]
+
+    def test_valid_markers_are_clean(self):
+        fixture = ProjectFixture(punchlist=NEEDS_PUNCHLIST)
+        try:
+            self.assertEqual([m for _level, m in self.lint_messages(fixture) if "needs" in m], [])
+        finally:
+            fixture.close()
+
+    def test_unknown_kind_and_two_markers_are_errors(self):
+        punchlist = NEEDS_PUNCHLIST.replace("`needs: action`", "`needs: approval`").replace(
+            "Export to CSV.", "Export to CSV. `needs: decision` `needs: action`"
+        )
+        fixture = ProjectFixture(punchlist=punchlist)
+        try:
+            errors = [m for level, m in self.lint_messages(fixture) if level == "ERROR"]
+            self.assertTrue(any("P-006" in m and "approval" in m for m in errors))
+            self.assertTrue(any("P-002" in m and "2 `needs:` markers" in m for m in errors))
+        finally:
+            fixture.close()
+
+    def test_legacy_waiting_on_line_and_next_up_naming_a_needs_item_warn(self):
+        fixture = ProjectFixture(punchlist=NEEDS_PUNCHLIST)
+        try:
+            state = fixture.root / "docs" / "STATE.md"
+            state.write_text(state.read_text().replace("1. P-001", "1. P-001\n2. P-005\n\n**Waiting on maintainer:** P-006"))
+            warnings = [m for level, m in self.lint_messages(fixture) if level == "WARN"]
+            self.assertTrue(any("Waiting on" in m for m in warnings))
+            self.assertTrue(any("P-005" in m and "needs" in m for m in warnings))
+            self.assertFalse(any("Next up lists P-006" in m for m in warnings))  # the legacy line isn't read as Next up
         finally:
             fixture.close()
 

@@ -40,8 +40,9 @@ uncommitted state — or "nothing"), `**Environment:**`.
 
 `## Next up` is a numbered list whose entries lead with P-IDs, in the order to do them: `now` items
 first, then whichever `next` item unblocks the most. When nothing is `now`, list the top `next`
-items. Follow it with `**Waiting on <owner>:** P-…` for items only the owner can do. `lint` errors if
-Next up names a done item.
+items. Items waiting on the owner aren't listed here: their `needs:` marker in PUNCHLIST is the only
+record. `lint` errors if Next up names a done item, and warns if it names a `needs:` item or if STATE
+still has a `**Waiting on …:**` line (the older format).
 
 ## PUNCHLIST.md
 
@@ -69,6 +70,23 @@ in order, is Bugs · Features · Improvements · Follow-ups from shipped work ·
 - An **umbrella** item points at a list worked row by row (e.g. a code-review Fix-first table). It
   retires only when its last row closes.
 
+### `needs:` — items waiting on the owner
+
+- `` `needs: decision` `` — the owner must answer a question, which the item text states plainly.
+  Tag it **only** when at least one holds: a product/UX fork the spec and code don't settle; a choice
+  that is expensive to reverse (data model, public format, published interface); a change to a
+  contract documented in CLAUDE.md; spending money or touching external accounts; anything externally
+  visible (publishing, messaging people). Otherwise the session decides, records a ruling and keeps
+  going.
+- `` `needs: action` `` — only the owner can do it: credentials, publishing, account setup, live or
+  manual checks against production or hardware.
+- At most one marker per item, anywhere in it; `lint` errors on two, or on any other kind. The marker
+  is the only record that an item waits on the owner. Code-review findings use
+  `Status: needs-ruling:` instead.
+- A ruling recorded on an item is a continuation line `  Ruling YYYY-MM-DD: <answer> — <why>`. If that
+  would take the item past 5 lines, put the ruling in the linked spec's Rulings and link it.
+- A triaged-and-kept `later` item gets `(YYYY-MM-DD: triaged — keep, <why>)`, which resets its age.
+
 ## history/punchlist-done.md
 
 Closing an item: **cut** the whole entry from PUNCHLIST, paste it under the `## ` heading with the
@@ -81,10 +99,15 @@ format, and add this as **its own line, indented two spaces**, after the item's 
 
 The SHA is the commit that did the work.
 
+Two other closing lines go in the same place:
+- `  — DONE YYYY-MM-DD (manual): …` when the owner did the work and no commit did.
+- `  — DROPPED YYYY-MM-DD: <why>` when it won't be done. The ID stays retired.
+
 ## history/parked.md
 
-Same as done, but the suffix line is `  — PARKED YYYY-MM-DD: stale (no change in N days)`. To revive an item,
-move it back to PUNCHLIST with its original ID.
+Same as done, but the suffix line is `  — PARKED YYYY-MM-DD: stale (no change in N days)`, or
+`  — PARKED YYYY-MM-DD: triaged (<why>)` when the owner parked it. To revive an item, move it back to
+PUNCHLIST with its original ID.
 
 ## history/build-log.md
 
@@ -140,6 +163,8 @@ A finding, while open:
   - `dup of <ID>`
 
   The first two are open; the last three are closed.
+  An owner's answer to a `needs-ruling:` question makes it `open — ruling YYYY-MM-DD: <answer>` or
+  `wontfix: <why>`.
 - **Collapsed** (after close, by `punchlist compact`): the whole finding becomes one line and its body
   is removed. Git keeps the text.
   ```
@@ -186,7 +211,7 @@ docs_dir: docs
 base_branch: main
 branch_prefix: punchlist/
 push: never            # never | allowed
-owner: the maintainer  # who "Waiting on" means
+owner: the maintainer  # who needs: items wait on
 build_log_since: 2026-09-23   # entries dated before this are exempt from the length budget
 gates:
   - run: npm test
@@ -201,6 +226,7 @@ budgets:
   punchlist_lines: 250
   build_log_entry_lines: 15
   stale_later_days: 60
+  triage_after_days: 30   # untagged later items older than this are due for triage
 ```
 
 The config uses a YAML subset: scalars, nested maps, and lists of scalars or maps. Two-space indents,

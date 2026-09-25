@@ -143,6 +143,9 @@ Show the user:
 - Replace the content between `<!-- punchlist:begin -->` and `<!-- punchlist:end -->` with the current
   template. Keep the project's docs path and push rule, and honor `planning_rules: false`.
 - Create any standard file that's missing.
+- **Legacy `**Waiting on …:**` line in STATE** (the format before `needs:`): tag each item it names
+  `needs: decision` or `needs: action` in PUNCHLIST, by what the item asks of the owner, then delete
+  the line. `lint` warns until it's gone.
 - Report config keys whose defaults have changed.
 - `$PL lint`, then commit as `docs(punchlist): upgrade punchlist block`.
 

@@ -17,8 +17,6 @@ In priority order. Details live on the PUNCHLIST item.
 
 1. P-001 — end-to-end skill smoke via real headless invocations.
 
-**Waiting on maintainer:** nothing.
-
 ## Orientation (read before substantive work)
 
 1. `CLAUDE.md` — the agent contract for this repo.
