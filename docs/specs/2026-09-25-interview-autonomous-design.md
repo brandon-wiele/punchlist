@@ -103,6 +103,8 @@ live/manual checks against production or hardware.
    change priority. Keep → triage note. Items that became `now` go into STATE Next up in order.
 7. **Wrap.** `$PL lint` (fix ERRORs) → one commit `docs(punchlist): interview — <n> resolved`.
    Report: resolved, still open, and how many items are now workable — suggest `:autonomous` if any.
+   Answers are written to the docs as each batch comes back, so if the owner stops partway, the wrap
+   still runs and commits what was resolved; unanswered items stay tagged.
 
 ### 4. `/punchlist:autonomous [max-units]`
 
@@ -110,25 +112,37 @@ live/manual checks against production or hardware.
    `$PL lint` has no ERROR (a pre-existing error would fail every unit's retire). Any failure → stop
    and say why. Print one line of plan (queue head, cap) and a note that an unattended run stalls on
    permission prompts for gates and git unless the session auto-approves them. Don't ask; proceed.
+   Record the start SHA (`git rev-parse --short HEAD`) for the review and the report.
 2. **Loop, serially (R3).** `$PL queue --json` → first `workable` entry. None → stop. Dispatch one
-   foreground general-purpose subagent:
+   general-purpose subagent **in the background** and wait for its completion before doing anything
+   else — still one unit at a time, but the owner can talk to the orchestrator mid-run (R9):
    > Invoke the `punchlist:next` skill with argument `<ID>` in `<root>` and follow it exactly. Never
    > ask the user anything; if the unit needs the owner, tag it `needs:` as the skill says and stop.
-   > Reply only with: `outcome` (done | partial | split | skipped | failed), `id`, `code_sha`,
-   > `bookkeeping_sha`, `gates`, `new_items`, `needs_you`, `notes` (≤ 3 lines).
+   > Never push, whatever `push:` says. Reply only with: `outcome` (done | partial | split | skipped
+   > | failed), `id`, `code_sha`, `bookkeeping_sha`, `gates`, `new_items`, `needs_you`, `notes`
+   > (≤ 3 lines).
 
-   Subagents run `:next` only — no per-unit `:handoff` (R2).
+   Subagents run `:next` only — no per-unit `:handoff` (R2). If the owner says to stop, let the
+   running unit finish and pass its checks, then stop with reason "stopped by owner".
 3. **Check after every unit.** On `base_branch`; no uncommitted tracked changes; `$PL lint` has no
    ERROR; `outcome` isn't `failed`. Any failure → **stop the run** (R4); report the subagent's
    report, the branch left behind and the exact next step. Never clean up or stash.
 4. **Stop conditions.** Workable queue empty · only `needs:` items remain · `max-units` reached
-   (default 10) · a check fails · the same ID is dispatched a third time in one run (not converging).
+   (default 10) · a check fails · the same ID is dispatched a third time in one run (not converging)
+   · the owner asks to stop.
 5. **Wrap.** `$PL compact` and apply it unless it parks an item touched this run; `$PL lint`; commit
    `docs(punchlist): autonomous run — <n> units` if anything changed.
-6. **Report.** One row per unit (ID, outcome, SHAs), new P-IDs, stop reason, and — if `needs` is
-   non-empty — "N items need you — run `/punchlist:interview`". Never pushes (follows `push:`).
+6. **Review the run (R10).** If any unit committed code, dispatch one read-only reviewer subagent over
+   `<start-sha>..HEAD` with the list of units and their item text. It returns, per unit, "fine" or
+   "look at this: <why, file:line>" — correctness, scope creep, or tests that don't exercise the
+   change. It doesn't fix, revert or stop anything; its verdicts go in the report. Use
+   `superpowers:requesting-code-review` if available, otherwise a plain review prompt.
+7. **Report.** One row per unit (ID, outcome, SHAs, review verdict), new P-IDs, stop reason, the
+   commit range to review before publishing (`<start-sha>..HEAD`), and — if `needs` is non-empty —
+   "N items need you — run `/punchlist:interview`". **Never pushes, whatever `push:` says (R8).**
+   If the session has a notification tool, send a one-line notice when the run stops.
 
-The orchestrator never reads code; its context holds only queue JSON and unit reports.
+The orchestrator never reads code; its context holds only queue JSON, unit reports and the review.
 
 ### 5. Changes to existing skills and docs
 
@@ -160,6 +174,12 @@ The orchestrator never reads code; its context holds only queue JSON and unit re
 - **R5** — `later` items are never worked autonomously; `:interview` triage promotes them.
 - **R6** — Two marker kinds only (`decision`, `action`). Findings keep `needs-ruling:`.
 - **R7** — Dropped items go to punchlist-done with `DROPPED`; their IDs stay retired.
+- **R8** — `:autonomous` never pushes, even with `push: allowed`. Unattended work is reviewed by the
+  owner before it leaves the machine; the report gives the range.
+- **R9** — Units are dispatched in the background but strictly one at a time, so the owner can stop
+  a run between units without killing a unit mid-merge.
+- **R10** — One review per run, not per unit: it points the owner's review at the units that need
+  it, at the cost of one agent. It is advisory and never blocks or reverts.
 
 ## Testing
 
@@ -167,19 +187,27 @@ The orchestrator never reads code; its context holds only queue JSON and unit re
   legacy Waiting-on, Next up lists a needs item); `queue` ordering (Next up → now → next, dedupe,
   excludes `later` and `needs`), `needs` group including needs-ruling findings, `triage` with an
   injected age function, JSON shape; `(manual)` and `DROPPED` lines count as closed.
-- **Spike first:** confirm a subagent can invoke `punchlist:next` through the Skill tool. Everything
-  in `:autonomous` depends on it. Installs are cached per version, so dry runs load skills from the
-  checkout, not the installed plugin.
+- **Spike, before the plan — passed 2026-09-25.** A general-purpose subagent has the Skill tool,
+  loaded `punchlist:next`, and sees every `punchlist:*` skill. It loaded the **installed** copy
+  (`~/.claude/plugins/cache/punchlist/punchlist/0.4.0/…`), so subagents only see skill changes after
+  `just release` + `/reload-plugins`. Dry runs therefore load skills from the checkout, not the
+  installed plugin.
 - **Skill dry runs (baseline vs with-skill, per `superpowers:writing-skills`)** against a scratch repo
   holding two small workable items, two `decision` items, one `action`, one `needs-ruling` finding and
   one stale `later` item:
   - `:interview` — briefs lead with plain language, give options with trade-offs and a
     recommendation; answers are recorded in the right format; lint is clean; one commit.
-  - `:autonomous` — works both workable items serially, stops on `needs:`, suggests `:interview`;
-    a second scenario with a failing gate stops at that unit and leaves the branch.
+  - `:autonomous` — works both workable items serially, stops on `needs:`, reviews the range, doesn't
+    push under `push: allowed`, suggests `:interview`; a second scenario with a failing gate stops at
+    that unit and leaves the branch; a third where the owner says "stop" mid-run stops after the
+    current unit.
+  - `:interview` stopped after the first batch still commits the answers given.
   - `:next`, `:add`, `:handoff` — owner items are tagged with `needs:`, and no Waiting-on line is
     written.
 - `just check` passes.
+- **Acceptance — dogfood on this repo.** After the legacy Waiting-on migration, run `:interview`
+  against this repo's own backlog: P-005 (list in marketplaces once P-001 passes) is a real
+  `needs: action` item, and the stale `later` items are real triage candidates.
 
 ## Out of scope
 
