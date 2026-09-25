@@ -6,7 +6,7 @@ move to [`history/punchlist-done.md`](history/punchlist-done.md), and stale `lat
 
 ## Conventions
 
-- **ID** — `P-###`, never reused, never renumbered. Next free ID: **P-006**.
+- **ID** — `P-###`, never reused, never renumbered. Next free ID: **P-007**.
 - **Priority** — `now` (blocking or next up), `next` (queued), `later` (parked or nice-to-have).
   One line per item plus ≤ 3 lines of context; link out for the rest.
 - **Adding** — `/punchlist:add`, or append under the right section with `punchlist next-id --bump`.
@@ -14,6 +14,12 @@ move to [`history/punchlist-done.md`](history/punchlist-done.md), and stale `lat
   `— DONE YYYY-MM-DD (<sha>): <what shipped>`. `/punchlist:next` does this. Ship with `just release`.
 
 ---
+
+## Features
+
+- **P-006** · now · `/punchlist:interview` (clear items that need the owner, PM-style briefs) and
+  `/punchlist:autonomous` (serial subagent loop over `:next`), plus a `needs:` item marker and a
+  `punchlist queue` command. Spec: `docs/specs/2026-09-25-interview-autonomous-design.md`.
 
 ## Improvements
 
