@@ -470,6 +470,24 @@ class CompactTest(unittest.TestCase):
             fixture.close()
 
 
+class ItemAgeTest(unittest.TestCase):
+    def test_a_recent_note_on_a_later_item_keeps_it_from_going_stale(self):
+        punchlist = PUNCHLIST.replace(
+            "- **P-003** · later · Dark mode.\n",
+            "- **P-003** · later · Dark mode.\n  (2026-09-20: triaged — keep, users asked)\n",
+        )
+        fixture = ProjectFixture(punchlist=punchlist, config="budgets:\n  stale_later_days: 30\n")
+        try:
+            item = next(i for i in core.parse_punchlist(punchlist)["items"] if i["id"] == "P-003")
+            ages = lambda _path, line: 90 if line == item["start"] else 2
+            changes = core.compact(fixture.root, age_days=ages, today="2026-09-23")
+            self.assertNotIn(str(Path("docs/PUNCHLIST.md")), changes)
+            found = core.lint(fixture.root, age_days=ages)
+            self.assertFalse(any("stale" in message for _lv, _p, _l, message in found))
+        finally:
+            fixture.close()
+
+
 class CliTest(unittest.TestCase):
     def test_cli_runs_from_any_cwd_and_lint_exit_code(self):
         fixture = ProjectFixture()

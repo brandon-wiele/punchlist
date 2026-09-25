@@ -51,7 +51,7 @@ Project-specific rules stay outside it.
 - `punchlist lint` — `ERROR`/`WARN` lines with file:line; exit 1 on any ERROR. Checks: STATE and
   PUNCHLIST line budgets; build-log entry length; STATE snapshot SHA exists and no code commits
   landed after it; P-ID both open and done; duplicate P-IDs; counter ≤ max ID; invalid finding status;
-  `later` items older than the stale threshold (WARN); Next up naming a done item; malformed items;
+  `later` items whose newest line is older than the stale threshold (WARN); Next up naming a done item; malformed items;
   items over 5 lines (WARN); a snapshot claiming `clean` while *code* is uncommitted (WARN).
 - `punchlist docs [--under P] [--json]` — evidence for tidy: per-folder summary or per-file rows: lines,
   last change, inbound links, dangling refs (forgivingly resolved) and the subset that existed in git

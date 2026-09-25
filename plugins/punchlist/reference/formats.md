@@ -62,6 +62,8 @@ in order, is Bugs · Features · Improvements · Follow-ups from shipped work ·
 - `from:` names the item or feature that spawned a deferral.
 - Partly done: add a progress note `(YYYY-MM-DD: <what's done> <sha or "uncommitted">; <what remains>)`.
 - An item is ≤ 5 lines in total (`lint` warns above that). Link out instead of growing it.
+- An item's **age** is the time since *any* of its lines last changed (git blame). `later` items
+  older than `stale_later_days` are stale.
 - An item must be actionable by a cold session: say what's wrong or wanted and where. If the premise
   is conditional (e.g. "once there's a UI"), say so.
 - An **umbrella** item points at a list worked row by row (e.g. a code-review Fix-first table). It

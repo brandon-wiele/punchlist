@@ -199,6 +199,16 @@ def parse_done_ids(text: str) -> set:
     return {match.group(1) for match in (ITEM_RE.match(line) for line in text.splitlines()) if match}
 
 
+def _next_up_lines(state_text: str) -> list:
+    """(0-based line number, line) for each line of STATE's `## Next up` section, heading excluded."""
+    lines = state_text.splitlines()
+    heading = next((n for n, line in enumerate(lines) if line.startswith("## Next up")), None)
+    if heading is None:
+        return []
+    end = next((n for n in range(heading + 1, len(lines)) if lines[n].startswith("## ")), len(lines))
+    return [(number, lines[number]) for number in range(heading + 1, end)]
+
+
 def _status_is_closed(status: str) -> bool | None:
     """True closed, False open, None if the value isn't in the status vocabulary."""
     if status == "open" or status.startswith("open ") or status.startswith("needs-ruling:"):
@@ -362,6 +372,11 @@ def blame_age_days(root: Path, path: Path, line_number: int, today: _dt.date | N
     return ((today or _dt.date.today()) - changed).days
 
 
+def _item_age_days(age_days: Callable, path: Path, item: dict) -> int:
+    """Days since any line of the item last changed, so a fresh note or ruling makes the item fresh."""
+    return min(age_days(path, line) for line in range(item["start"], item["end"]))
+
+
 # --- lint ---------------------------------------------------------------------------------------
 
 
@@ -416,7 +431,7 @@ def lint(root: Path, age_days: Callable | None = None) -> list:
             if item["priority"] not in PRIORITIES:
                 add("ERROR", punchlist, item["start"] + 1, f"{item['id']}: priority '{item['priority']}' is not now/next/later")
             elif item["priority"] == "later":
-                age = age_days(punchlist, item["start"])
+                age = _item_age_days(age_days, punchlist, item)
                 if age > budgets["stale_later_days"]:
                     add("WARN", punchlist, item["start"] + 1, f"{item['id']} is a stale `later` item ({age} days unchanged) — park it with `punchlist compact`")
         done_path = docs / "history" / "punchlist-done.md"
@@ -437,20 +452,15 @@ def lint(root: Path, age_days: Callable | None = None) -> list:
                 add("WARN", punchlist, item["start"] + 1, f"{item['id']} is {item['end'] - item['start']} lines; keep items to ≤ {MAX_ITEM_LINES} and link out")
 
     if state.exists() and punchlist.exists():
-        state_lines = state.read_text().splitlines()
-        heading = next((n for n, line in enumerate(state_lines) if line.startswith("## Next up")), None)
-        if heading is not None:
-            end = next((n for n in range(heading + 1, len(state_lines)) if state_lines[n].startswith("## ")), len(state_lines))
-            for number in range(heading + 1, end):
-                line = state_lines[number]
-                if line.startswith("**Waiting on"):
-                    continue
-                for match in ANY_ID_RE.finditer(line):
-                    item_id = f"P-{match.group(1)}"
-                    if item_id in done_ids and item_id not in open_ids:
-                        add("ERROR", state, number + 1, f"Next up lists {item_id}, which is done — refresh Next up")
-                    elif item_id not in open_ids:
-                        add("WARN", state, number + 1, f"Next up lists {item_id}, which isn't an open PUNCHLIST item")
+        for number, line in _next_up_lines(state.read_text()):
+            if line.startswith("**Waiting on"):
+                continue
+            for match in ANY_ID_RE.finditer(line):
+                item_id = f"P-{match.group(1)}"
+                if item_id in done_ids and item_id not in open_ids:
+                    add("ERROR", state, number + 1, f"Next up lists {item_id}, which is done — refresh Next up")
+                elif item_id not in open_ids:
+                    add("WARN", state, number + 1, f"Next up lists {item_id}, which isn't an open PUNCHLIST item")
 
     if state.exists():
         snapshot = SNAPSHOT_SHA_RE.search(state.read_text())
@@ -534,14 +544,14 @@ def compact(root: Path, age_days: Callable | None = None, today: str | None = No
     punchlist = docs / "PUNCHLIST.md"
     if punchlist.exists():
         parsed = parse_punchlist(punchlist.read_text())
-        stale = [i for i in parsed["items"] if i["priority"] == "later" and age_days(punchlist, i["start"]) > config["budgets"]["stale_later_days"]]
+        stale = [i for i in parsed["items"] if i["priority"] == "later" and _item_age_days(age_days, punchlist, i) > config["budgets"]["stale_later_days"]]
         if stale:
             lines = list(parsed["lines"])
             parked_path = docs / "history" / "parked.md"
             parked = parked_path.read_text() if parked_path.exists() else PARKED_HEADER
             for item in stale:
                 block = lines[item["start"] : item["end"]]
-                days = age_days(punchlist, item["start"])
+                days = _item_age_days(age_days, punchlist, item)
                 block.append(f"  — PARKED {today}: stale (no change in {days} days)\n")
                 parked = _append_under_heading(parked, item["section"] or "Unsorted", "".join(block))
             for item in reversed(stale):
