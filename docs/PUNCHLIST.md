@@ -19,7 +19,8 @@ move to [`history/punchlist-done.md`](history/punchlist-done.md), and stale `lat
 
 - **P-006** · now · `/punchlist:interview` (clear items that need the owner, PM-style briefs) and
   `/punchlist:autonomous` (serial subagent loop over `:next`), plus a `needs:` item marker and a
-  `punchlist queue` command. Spec: `docs/specs/2026-09-25-interview-autonomous-design.md`.
+  `punchlist queue` command. Spec: `docs/specs/2026-09-25-interview-autonomous-design.md`,
+  plan: `docs/plans/2026-09-25-interview-autonomous.md`.
 
 ## Improvements
 

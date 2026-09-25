@@ -54,8 +54,8 @@ live/manual checks against production or hardware.
 
 ### 2. Script: `needs` parsing, `punchlist queue`, lint rules (stdlib, TDD)
 
-- `parse_punchlist` records `needs` (kind or `None`) on each item from `` `needs: <kind>` `` anywhere in
-  the item's span.
+- `parse_punchlist` records `needs` on each item: the list of kinds from `` `needs: <kind>` `` tags
+  anywhere in the item's span (empty when untagged), so lint can see duplicates.
 - **`punchlist queue [--json]`** — the single source of pick order, used by `:next`, `:autonomous`
   and `:interview`. Read-only.
   - `workable`: open items with no `needs:`, in `:next`'s order — STATE Next up entries (listed
