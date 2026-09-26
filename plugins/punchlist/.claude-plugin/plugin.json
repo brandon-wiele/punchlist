@@ -1,6 +1,7 @@
 {
   "name": "punchlist",
-  "description": "Session continuity for long-running AI-assisted projects: STATE + PUNCHLIST + history docs, handoffs, one-item-at-a-time work, codebase reviews, and a lint/compact script that keeps it all small.",
+  "displayName": "Punchlist",
+  "description": "Keeps long-running AI-assisted projects oriented: a lean STATE doc, a single backlog and a history, with commands to catch up, work items one at a time or unattended, capture ideas, clear the decisions waiting on you, and hand off cleanly.",
   "version": "0.6.0",
   "author": {
     "name": "punchlist contributors"
