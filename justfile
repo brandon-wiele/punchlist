@@ -71,7 +71,7 @@ release bump="patch": check
     claude plugin update {{plugin}}
     # The release commit is a code commit, so point this repo's own STATE snapshot at it.
     just _snapshot "release v${new}"
-    echo "released v${new} — restart Claude Code sessions (or /reload-plugins) to pick it up"
+    echo "released v${new} — restart Claude Code sessions to pick it up (/reload-plugins does not register newly added skills)"
 
 # Push main and tags to GitHub. Maintainer only: sessions never push. Run after `just release`.
 publish:
