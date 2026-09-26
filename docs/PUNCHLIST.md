@@ -31,5 +31,6 @@ move to [`history/punchlist-done.md`](history/punchlist-done.md), and stale `lat
   (another user account, a VM or another machine); this one's Docker setup stays as it is. Resume
   branch `punchlist/P-001-eval-slice-1` at plan task 1 (six cases written, unrun). `needs: action` `from: P-001`
   Ruling 2026-09-26: the owner won't change this machine's Docker config; park until then.
-- **P-005** · later · List the plugin in community Claude Code plugin marketplaces once P-001 passes.
-  `needs: action`
+- **P-005** · later · List the plugin in Anthropic's plugin directory (https://claude.ai/directory/manage;
+  needs a public repo and a paid plan). `needs: action`
+  (2026-09-26: metadata and LICENSE added, v0.7.0 released 279fd8a; remains: `just publish`, then submit)
