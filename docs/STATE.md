@@ -6,7 +6,7 @@
 
 ## Snapshot — 2026-09-25
 
-- **Branch:** `main` @ `b9d6544`, clean. Sessions never push; the maintainer runs `just publish`.
+- **Branch:** `main` @ `a74ba08`, clean. Sessions never push; the maintainer runs `just publish`.
 - **Last shipped:** P-006 — /punchlist:interview + /punchlist:autonomous, the needs: marker and
   punchlist queue (unreleased: needs `just release minor`).
 - **In flight:** nothing.
