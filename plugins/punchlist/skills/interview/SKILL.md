@@ -73,6 +73,7 @@ _P-### · <section>_
 ```
 
 The ID is a footnote. Never lead with it, and never paste the raw item line instead of a headline.
+Action and triage briefs leave out the **Recommend** line unless you have a real recommendation.
 
 For each question:
 - `header`: ≤ 12 characters naming the topic, not the ID.
@@ -108,7 +109,8 @@ early loses nothing.
 Moving an item means cutting the whole entry and pasting it under the heading with the same name as
 its PUNCHLIST section in the target file (create the heading at the end if it's missing).
 
-Anything an answer spawns (follow-up work, a new question) becomes a new item from
+A ruling makes the item or finding itself workable; don't file a separate item to implement it.
+Anything else an answer spawns (new follow-up work, a new question) becomes a new item from
 `$PL next-id --bump`, tagged `from: <ID>`.
 
 ## 6. Wrap — also when the owner stops partway

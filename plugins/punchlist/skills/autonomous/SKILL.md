@@ -38,7 +38,9 @@ If there's no `.punchlist.yml`, stop and suggest `/punchlist:setup`.
    > Work one punchlist unit in `<project root>`: invoke the `punchlist:next` skill with argument
    > `<ID>` and follow it exactly, through merge and bookkeeping. Rules for this run: never ask the
    > user anything — if the unit needs the owner, tag it `needs:` as the skill says, commit the
-   > bookkeeping and stop; never push, whatever `push:` says. Reply with only these lines:
+   > bookkeeping and stop; if a gate fails, don't retire, merge or switch branches — leave the work on
+   > the unit's branch and reply `outcome: failed`; never push, whatever `push:` says. Reply with only
+   > these lines:
    > outcome: done | partial | split | skipped | failed
    > id: <ID>
    > code_sha: <sha or ->

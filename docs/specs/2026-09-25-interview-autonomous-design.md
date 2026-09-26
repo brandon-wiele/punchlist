@@ -32,10 +32,12 @@ A backtick tag on a P-item, like `from:`:
 - Code-review findings keep their own `Status: needs-ruling: <question>`; they are not also tagged.
 
 **When to tag `needs: decision` (strict — goes in formats.md).** Only when at least one holds:
-a product/UX fork the spec and code don't settle; a choice that is expensive to reverse (data model,
-public format, published interface); a change to a contract documented in CLAUDE.md; spending money
-or touching external accounts; anything externally visible (publishing, messaging people). Otherwise
-the session decides, records a ruling, and keeps going — as CLAUDE.md § Planning weight already says.
+the owner has said the decision is theirs ("we need to decide …"); a product/UX fork the spec and
+code don't settle; a choice that is expensive to reverse (data model, public format, published
+interface, supported platforms or versions); a change to a contract documented in CLAUDE.md;
+spending money or touching external accounts; anything externally visible (publishing, messaging
+people). Otherwise the session decides, records a ruling, and keeps going — as CLAUDE.md § Planning
+weight already says.
 
 **`needs: action`** — the owner must physically do it: credentials, publishing, account setup,
 live/manual checks against production or hardware.

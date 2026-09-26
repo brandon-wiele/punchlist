@@ -26,8 +26,9 @@ argument-hint: "<what to capture>"
    dialog to), say that instead of pretending. If an add is abandoned after `--bump`, the burned ID
    stays unused; never reuse it.
 5. If only the owner can move it, tag it `needs: decision` or `needs: action` (formats.md § `needs:`
-   has the criteria) and keep it out of Next up. Otherwise, if it's `now` and belongs ahead of STATE's
-   current "Next up" head, add it to "Next up".
+   has the criteria) and keep it out of Next up. A request that says the owner must decide ("we need
+   to decide whether …") is the owner's decision: tag it `needs: decision`. Otherwise, if it's `now`
+   and belongs ahead of STATE's current "Next up" head, add it to "Next up".
 6. `$PL lint`; fix any ERROR. If the working tree has no other changes, commit as
    `docs(punchlist): add P-### <short>` (for several items, `add P-###, P-### …`). Otherwise leave the
    edit uncommitted and say so, so it isn't tangled into someone's in-progress work.
