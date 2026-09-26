@@ -41,7 +41,7 @@ uncommitted state — or "nothing"), `**Environment:**`.
 `## Next up` is a numbered list whose entries lead with P-IDs, in the order to do them: `now` items
 first, then whichever `next` item unblocks the most. When nothing is `now`, list the top `next`
 items. Items waiting on the owner aren't listed here: their `needs:` marker in PUNCHLIST is the only
-record. `lint` errors if Next up names a done item, and warns if it names a `needs:` item or if STATE
+record, and `punchlist queue` lists them. `lint` errors if Next up names a done item, and warns if it names a `needs:` item or if STATE
 still has a `**Waiting on …:**` line (the older format).
 
 ## PUNCHLIST.md
@@ -86,6 +86,20 @@ in order, is Bugs · Features · Improvements · Follow-ups from shipped work ·
 - A ruling recorded on an item is a continuation line `  Ruling YYYY-MM-DD: <answer> — <why>`. If that
   would take the item past 5 lines, put the ruling in the linked spec's Rulings and link it.
 - A triaged-and-kept `later` item gets `(YYYY-MM-DD: triaged — keep, <why>)`, which resets its age.
+
+## Pick order — `punchlist queue`
+
+`punchlist queue [--json]` is the one definition of what to work next. Skills read it; they don't
+re-derive it. Three groups:
+- **workable** — open items with no `needs:` marker, in order: STATE Next up entries as listed, then
+  `now` items, then `next` items (both in PUNCHLIST order), each once. `later` items are never
+  workable; promote them first.
+- **needs** — items with a `needs:` marker (`kind` decision | action), then findings whose Status is
+  `needs-ruling:` (`kind` ruling, plus `question` and `file`).
+- **triage** — untagged `later` items older than `budgets.triage_after_days`, with `age_days`.
+
+Every entry has `id`, `priority`, `section` and `text`. For findings, `priority` and `section` are
+null and `text` is the title.
 
 ## history/punchlist-done.md
 

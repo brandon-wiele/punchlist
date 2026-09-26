@@ -1,5 +1,6 @@
 """Behavioral tests for the punchlist CLI core. Run: python3 -m unittest discover -s tests"""
 
+import json
 import os
 import subprocess
 import sys
@@ -382,6 +383,60 @@ class NeedsLintTest(unittest.TestCase):
             self.assertTrue(any("Waiting on" in m for m in warnings))
             self.assertTrue(any("P-005" in m and "needs" in m for m in warnings))
             self.assertFalse(any("Next up lists P-006" in m for m in warnings))  # the legacy line isn't read as Next up
+        finally:
+            fixture.close()
+
+
+class QueueTest(unittest.TestCase):
+    def test_workable_order_follows_next_up_then_now_then_next(self):
+        punchlist = NEEDS_PUNCHLIST + "- **P-007** · now · Page the on-call when exports fail.\n"
+        fixture = ProjectFixture(punchlist=punchlist)
+        try:
+            state = fixture.root / "docs" / "STATE.md"
+            state.write_text(state.read_text().replace("1. P-001", "1. P-002"))
+            result = core.queue(fixture.root, age_days=lambda *_: 0)
+            self.assertEqual([entry["id"] for entry in result["workable"]], ["P-002", "P-001", "P-007"])
+            self.assertEqual(result["workable"][0], {"id": "P-002", "priority": "next", "section": "Features", "text": "Export to CSV."})
+        finally:
+            fixture.close()
+
+    def test_needs_lists_marked_items_and_findings_awaiting_a_ruling(self):
+        findings = FINDINGS.replace("- **Status:** open\n", "- **Status:** needs-ruling: retry or fail fast?\n", 1)
+        fixture = ProjectFixture(punchlist=NEEDS_PUNCHLIST, findings=findings)
+        try:
+            by_id = {entry["id"]: entry for entry in core.queue(fixture.root, age_days=lambda *_: 0)["needs"]}
+            self.assertEqual(sorted(by_id), ["API-001", "P-005", "P-006"])
+            self.assertEqual(by_id["P-005"]["kind"], "decision")
+            self.assertEqual(by_id["P-005"]["text"], "Pick the CSV delimiter for EU locales. `needs: decision`")
+            self.assertEqual(by_id["P-006"]["kind"], "action")
+            self.assertEqual(
+                by_id["API-001"],
+                {"id": "API-001", "kind": "ruling", "priority": None, "section": None, "text": "Cancel never propagates",
+                 "question": "retry or fail fast?", "file": str(Path("docs/code-review/01-api.md"))},
+            )
+        finally:
+            fixture.close()
+
+    def test_triage_lists_untagged_later_items_older_than_the_budget(self):
+        punchlist = NEEDS_PUNCHLIST + "- **P-008** · later · Decide whether to keep the beta flag. `needs: decision`\n"
+        fixture = ProjectFixture(punchlist=punchlist, config="budgets:\n  triage_after_days: 30\n")
+        try:
+            self.assertEqual(core.queue(fixture.root, age_days=lambda *_: 10)["triage"], [])
+            old = core.queue(fixture.root, age_days=lambda *_: 45)
+            self.assertEqual([(entry["id"], entry["age_days"]) for entry in old["triage"]], [("P-003", 45)])  # P-008 is tagged: it's in needs
+            self.assertNotIn("P-003", [entry["id"] for entry in old["workable"]])  # later items are never workable
+        finally:
+            fixture.close()
+
+    def test_cli_queue_json_and_plain(self):
+        fixture = ProjectFixture(punchlist=NEEDS_PUNCHLIST)
+        try:
+            as_json = subprocess.run([sys.executable, str(BIN), "queue", "--json"], cwd=fixture.root, capture_output=True, text=True)
+            self.assertEqual(as_json.returncode, 0, as_json.stderr)
+            self.assertEqual(sorted(json.loads(as_json.stdout)), ["needs", "triage", "workable"])
+            plain = subprocess.run([sys.executable, str(BIN), "queue"], cwd=fixture.root, capture_output=True, text=True)
+            self.assertIn("P-005 · decision · Pick the CSV delimiter", plain.stdout)
+            self.assertIn("Workable (2):", plain.stdout)
         finally:
             fixture.close()
 

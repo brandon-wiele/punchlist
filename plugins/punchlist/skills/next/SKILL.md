@@ -30,7 +30,7 @@ Run `git status` and `git log --oneline -5`. If tracked files are modified or yo
 | Situation | The unit is |
 |---|---|
 | Argument given | That item or finding. If it carries `needs:`, or only the owner can do it, say so and stop. |
-| No argument | The first actionable entry in STATE "Next up"; else the first `now` item in PUNCHLIST order; else the first `next` item |
+| No argument | The first `workable` entry of `$PL queue --json` (Next up, then `now`, then `next`; items tagged `needs:` and `later` items are excluded) |
 | The item is an **umbrella** (points at a code-review Fix-first table) | The first Fix-first row whose findings aren't all closed |
 | Only the owner can do it (formats.md § `needs:` criteria) | **Skip it**: tag it `needs: decision` or `needs: action`, stating the question or task plainly in the item; name it in the report; move on |
 | A choice comes up that doesn't meet those criteria | Decide it, record `Ruling YYYY-MM-DD: …` on the item (or in the spec's Rulings), keep going |

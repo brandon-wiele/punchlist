@@ -6,6 +6,7 @@ Usage: punchlist <command> [options]   (run from anywhere inside the project's g
   config              print the resolved .punchlist.yml (defaults filled) as JSON
   status [--write]    open/done counts; --write regenerates the code-review README roll-up
   next-id [--bump]    the next free P-ID; --bump advances the counter in PUNCHLIST.md
+  queue [--json]      what's workable (in pick order), what needs the owner, what's due for triage
   lint                check budgets and consistency; exit 1 on any ERROR
   compact [--apply]   collapse closed findings, park stale `later` items; shows a diff, writes with --apply
   docs [--under P] [--json]   evidence for /punchlist:tidy: per-folder summary, or per-file rows under a path
@@ -23,6 +24,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "lib"))
 import punchlist_core as core  # noqa: E402
 
 
+def _print_queue(result: dict) -> None:
+    groups = (("Workable", "workable", "priority"), ("Needs you", "needs", "kind"), ("Triage", "triage", "age_days"))
+    for title, key, label_field in groups:
+        entries = result[key]
+        print(f"{title} ({len(entries)}):")
+        for entry in entries:
+            label = f"{entry[label_field]} days" if label_field == "age_days" else entry[label_field]
+            print(f"  {entry['id']} · {label} · {entry['text'][:100]}")
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(prog="punchlist", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--root", help="project root (default: git toplevel of the current directory)")
@@ -33,6 +44,8 @@ def main(argv=None) -> int:
     status_parser.add_argument("--json", action="store_true")
     next_parser = commands.add_parser("next-id")
     next_parser.add_argument("--bump", action="store_true")
+    queue_parser = commands.add_parser("queue")
+    queue_parser.add_argument("--json", action="store_true")
     commands.add_parser("lint")
     compact_parser = commands.add_parser("compact")
     compact_parser.add_argument("--apply", action="store_true")
@@ -68,6 +81,12 @@ def main(argv=None) -> int:
                         print(f"  {entry['file']}: {entry['open']} open ({severities or '-'}), {entry['closed']} closed")
         elif args.command == "next-id":
             print(core.next_id(root, bump=args.bump))
+        elif args.command == "queue":
+            result = core.queue(root)
+            if args.json:
+                print(json.dumps(result, indent=2))
+            else:
+                _print_queue(result)
         elif args.command == "lint":
             found = core.lint(root)
             for level, path, line, message in found:

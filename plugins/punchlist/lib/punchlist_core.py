@@ -213,6 +213,27 @@ def _next_up_lines(state_text: str) -> list:
     return [(number, lines[number]) for number in range(heading + 1, end)]
 
 
+def _item_text(lines: list, item: dict) -> str:
+    """The item's words without the ID/priority prefix, continuation lines joined by spaces."""
+    first = ITEM_RE.sub("", lines[item["start"]], count=1).strip()
+    rest = [line.strip() for line in lines[item["start"] + 1 : item["end"]]]
+    return " ".join(part for part in [first, *rest] if part)
+
+
+def _next_up_ids(state_path: Path) -> list:
+    """The leading P-ID of each Next up entry, in listed order."""
+    if not state_path.exists():
+        return []
+    ids = []
+    for _number, line in _next_up_lines(state_path.read_text()):
+        if line.startswith("**Waiting on"):
+            continue
+        match = ANY_ID_RE.search(line)
+        if match:
+            ids.append(f"P-{match.group(1)}")
+    return ids
+
+
 def _status_is_closed(status: str) -> bool | None:
     """True closed, False open, None if the value isn't in the status vocabulary."""
     if status == "open" or status.startswith("open ") or status.startswith("needs-ruling:"):
@@ -357,6 +378,63 @@ def next_id(root: Path, bump: bool = False) -> str:
         lines[index] = COUNTER_RE.sub(f"Next free ID: **P-{number + 1:03d}**", lines[index], count=1)
         path.write_text("".join(lines))
     return f"P-{number:03d}"
+
+
+# --- queue --------------------------------------------------------------------------------------
+
+
+def queue(root: Path, age_days: Callable | None = None) -> dict:
+    """What to work next, what waits on the owner, and what's due for triage. Writes nothing."""
+    root = Path(root)
+    config = load_config(root)
+    docs = _docs(root, config)
+    age_days = age_days or (lambda path, line: blame_age_days(root, path, line))
+    punchlist = docs / "PUNCHLIST.md"
+    if not punchlist.exists():
+        raise PunchlistError(f"{punchlist}: missing (run /punchlist:setup)")
+    parsed = parse_punchlist(punchlist.read_text())
+    items_by_id = {item["id"]: item for item in parsed["items"]}
+
+    def entry(item: dict) -> dict:
+        return {"id": item["id"], "priority": item["priority"], "section": item["section"], "text": _item_text(parsed["lines"], item)}
+
+    # The same order /punchlist:next has always used: Next up as listed, then `now`, then `next`.
+    candidates = [items_by_id[item_id] for item_id in _next_up_ids(docs / "STATE.md") if item_id in items_by_id]
+    candidates += [item for item in parsed["items"] if item["priority"] == "now"]
+    candidates += [item for item in parsed["items"] if item["priority"] == "next"]
+    workable = []
+    seen = set()
+    for item in candidates:
+        if item["id"] in seen or item["needs"] or item["priority"] == "later":
+            continue
+        seen.add(item["id"])
+        workable.append(entry(item))
+
+    needs = [dict(entry(item), kind=item["needs"][0]) for item in parsed["items"] if item["needs"]]
+    for path in _finding_files(root, config):
+        for finding in parse_findings(path.read_text()):
+            status = finding["status"] or ""
+            if not status.startswith("needs-ruling:"):
+                continue
+            needs.append({
+                "id": finding["id"],
+                "kind": "ruling",
+                "priority": None,
+                "section": None,
+                "text": finding["title"],
+                "question": status[len("needs-ruling:"):].strip(),
+                "file": str(path.relative_to(root)),
+            })
+
+    triage = []
+    for item in parsed["items"]:
+        if item["priority"] != "later" or item["needs"]:
+            continue
+        age = _item_age_days(age_days, punchlist, item)
+        if age > config["budgets"]["triage_after_days"]:
+            triage.append(dict(entry(item), age_days=age))
+
+    return {"workable": workable, "needs": needs, "triage": triage}
 
 
 # --- git helpers --------------------------------------------------------------------------------

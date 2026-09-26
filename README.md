@@ -47,6 +47,7 @@ plugins/punchlist/bin/punchlist [--root <project>] <command>
   config              resolved .punchlist.yml as JSON
   status [--write]    open/done counts; --write regenerates the code-review roll-up
   next-id [--bump]    the next free P-ID
+  queue [--json]      workable / needs-you / triage lists — the pick order the skills use
   lint                budgets and consistency checks; exits 1 on any ERROR
   compact [--apply]   collapse closed findings, park stale `later` items
   docs [--under P]    staleness evidence for /punchlist:tidy
