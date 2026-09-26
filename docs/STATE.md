@@ -6,8 +6,9 @@
 
 ## Snapshot — 2026-09-26
 
-- **Branch:** `main` @ `c087273`, clean. Sessions never push; the maintainer runs `just publish`.
-- **Last shipped:** item ages blame each file once (P-007); `:add`, `:review` and `:tidy` no longer fix
+- **Branch:** `main` @ `3d83f3d`, clean. Sessions never push; the maintainer runs `just publish`.
+- **Last shipped:** lint checks the docs index and archive links (P-004); item ages blame each file
+  once (P-007); `:add`, `:review` and `:tidy` no longer fix
   lint errors they didn't cause (P-008, P-015). All unreleased. Before
   that, v0.6.0 — /punchlist:brief and `punchlist recent` — released locally, not yet published.
 - **In flight:** nothing active. The eval-suite work in progress is parked on branch
@@ -59,6 +60,7 @@ Nothing is workable: everything left is `later` or waits on the owner — see `p
 
 ## Recent milestones (last ~8 — full index in [`history/build-log.md`](history/build-log.md))
 
+- 2026-09-26 — P-004: lint checks the docs index and archive links (unreleased)
 - 2026-09-26 — P-010: /punchlist:brief, a plain-language catch-up, and `punchlist recent` (v0.6.0)
 - 2026-09-25 — P-006: /punchlist:interview and /punchlist:autonomous, needs: marker, punchlist queue (v0.5.0)
 - 2026-09-23 — v0.4.0, first public release

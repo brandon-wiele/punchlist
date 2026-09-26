@@ -24,8 +24,6 @@ move to [`history/punchlist-done.md`](history/punchlist-done.md), and stale `lat
 - **P-013** · later · Once the eval smoke suite runs and passes (P-014): replace CLAUDE.md rule 4's
   hand-run dry runs with `just eval`, and match `docs/design.md` Testing. `from: P-001`
   Ruling 2026-09-26: yes, switch rule 4 to `just eval` — the owner's call on a contract change.
-- **P-004** · later · `lint` could check that `docs/README.md` (tidy's index) lists every current doc
-  and that no current doc links into the archive.
 
 ## Ops / manual
 

@@ -7,11 +7,23 @@
 
 | Date | Milestone | Merge | Spec / plan |
 |---|---|---|---|
+| 2026-09-26 | Lint checks the docs index and archive links | `3d83f3d` | none (small) |
 | 2026-09-26 | Brief skill | `082395b` | design agreed in session (no spec) |
 | 2026-09-25 | Interview + autonomous skills | `b9d6544` | `docs/specs/2026-09-25-interview-autonomous-design.md` · `docs/plans/2026-09-25-interview-autonomous.md` |
 | 2026-09-23 | v0.4.0 — first public release | `v0.4.0` | `docs/design.md` |
 
 ## Entries
+
+### 2026-09-26 — Lint checks the docs index and archive links — merged `3d83f3d`
+no spec (small; P-004)
+- **Why:** `/punchlist:tidy` writes a docs index, but nothing noticed when it went stale or when a
+  current doc sent readers into the archive.
+- **What shipped:** once `<docs>/README.md` exists, `punchlist lint` WARNs about any doc the index
+  doesn't link, directly or through a linked folder, and about any doc outside the archive and
+  `history/` that links to a file inside the archive. No new config.
+- **Rulings:** folder links cover their contents (a `specs/` row covers every spec); the index and
+  the history files may link into the archive; naming the archive folder isn't a link to a file.
+- **Verification:** 3 new tests, 54 in all on 3.9 and 3.13.
 
 ### 2026-09-26 — Brief skill — merged `082395b`
 design agreed in session; no spec or plan (small)

@@ -29,6 +29,9 @@ followed by its own indented line `  — DONE YYYY-MM-DD (<sha>): <what shipped>
   `/punchlist:autonomous` unit — use one `git blame -L start,end` per item instead.
   `plugins/punchlist/lib/punchlist_core.py`. `from: P-006`
   — DONE 2026-09-26 (c087273): one blame per file (cached per line), better than one per item; lint, compact and queue each blame PUNCHLIST once.
+- **P-004** · later · `lint` could check that `docs/README.md` (tidy's index) lists every current doc
+  and that no current doc links into the archive.
+  — DONE 2026-09-26 (3d83f3d): lint warns on docs missing from the index (folder links count) and on current docs linking into the archive.
 
 ## Features
 
