@@ -6,9 +6,9 @@
 
 ## Snapshot — 2026-09-26
 
-- **Branch:** `main` @ `0103987`, clean. Sessions never push; the maintainer runs `just publish`.
-- **Last shipped:** v0.5.0 — /punchlist:interview + /punchlist:autonomous, the needs: marker and
-  punchlist queue (released locally; not yet published).
+- **Branch:** `main` @ `082395b`, clean. Sessions never push; the maintainer runs `just publish`.
+- **Last shipped:** /punchlist:brief and `punchlist recent` (P-010), on top of v0.5.0
+  (interview + autonomous). Unreleased: needs `just release minor`; v0.5.0 is released locally, not published.
 - **In flight:** nothing.
 - **Environment:** installed locally as `punchlist@punchlist`. Installs are cached per version (see Verbs).
 
@@ -32,7 +32,7 @@ see `punchlist queue`.
 |---|---|---|
 | Plugin manifest | `plugins/punchlist/.claude-plugin/plugin.json` | `version` is bumped only by `just release` |
 | Marketplace | `.claude-plugin/marketplace.json` | Name `punchlist` |
-| Skills | `plugins/punchlist/skills/{setup,next,autonomous,interview,add,handoff,review,tidy}/SKILL.md` | Script fallback path: `<skill dir>/../../bin/punchlist` |
+| Skills | `plugins/punchlist/skills/{setup,next,autonomous,interview,brief,add,handoff,review,tidy}/SKILL.md` | Script fallback path: `<skill dir>/../../bin/punchlist` |
 | Script | `plugins/punchlist/bin/punchlist` → `lib/punchlist_core.py` | Stdlib-only Python ≥ 3.9 |
 | Formats + templates | `plugins/punchlist/reference/` | `formats.md` is normative |
 | Tests | `tests/test_punchlist.py` | Throwaway git-repo fixtures; CI runs them on 3.9 and 3.13 |
@@ -57,7 +57,8 @@ see `punchlist queue`.
 
 ## Recent milestones (last ~8 — full index in [`history/build-log.md`](history/build-log.md))
 
-- 2026-09-25 — P-006: /punchlist:interview and /punchlist:autonomous, needs: marker, punchlist queue (unreleased)
+- 2026-09-26 — P-010: /punchlist:brief, a plain-language catch-up, and `punchlist recent` (unreleased)
+- 2026-09-25 — P-006: /punchlist:interview and /punchlist:autonomous, needs: marker, punchlist queue (v0.5.0)
 - 2026-09-23 — v0.4.0, first public release
 
 ## Maintaining this file

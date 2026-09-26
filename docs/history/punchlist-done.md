@@ -16,6 +16,10 @@ followed by its own indented line `  — DONE YYYY-MM-DD (<sha>): <what shipped>
   `punchlist queue` command. Spec: `docs/specs/2026-09-25-interview-autonomous-design.md`,
   plan: `docs/plans/2026-09-25-interview-autonomous.md`.
   — DONE 2026-09-25 (b9d6544): /punchlist:interview + /punchlist:autonomous, needs: marker, punchlist queue.
+- **P-010** · now · `/punchlist:brief [N]`: a read-only, plain-language catch-up — where the project
+  stands, the last N finished units grouped into themes, and what's next — backed by a new
+  `punchlist recent [--limit N] [--json]` command (closed units, newest first).
+  — DONE 2026-09-26 (082395b): /punchlist:brief and punchlist recent.
 
 ## Ops / manual
 

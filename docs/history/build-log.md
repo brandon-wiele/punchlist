@@ -7,10 +7,23 @@
 
 | Date | Milestone | Merge | Spec / plan |
 |---|---|---|---|
+| 2026-09-26 | Brief skill | `082395b` | design agreed in session (no spec) |
 | 2026-09-25 | Interview + autonomous skills | `b9d6544` | `docs/specs/2026-09-25-interview-autonomous-design.md` · `docs/plans/2026-09-25-interview-autonomous.md` |
 | 2026-09-23 | v0.4.0 — first public release | `v0.4.0` | `docs/design.md` |
 
 ## Entries
+
+### 2026-09-26 — Brief skill — merged `082395b`
+design agreed in session; no spec or plan (small)
+- **Why:** coming back to a project needed a readable catch-up; STATE is terse position, not a story.
+- **What shipped:** `/punchlist:brief [N]` (read-only: where things stand, the last N finished units
+  grouped into themes, what's next); `punchlist recent [--limit N] [--json]` — done items and fixed
+  findings, newest first, dated by the DONE date and the closing commit (two git calls in total).
+- **Rulings:** "lately" = the last N finished units, not a time window (owner's choice); DROPPED
+  items are excluded; "also changed since" anchors on the newest unit that has a commit.
+- **Verification:** 48 tests on 3.9 and 3.13. Dry run on this repo: the no-skill brief said nothing
+  waited on the owner (P-005 did); the skill's first run missed changes since a hand-done unit, so the
+  anchor, the pick rule and a word budget were fixed, and the re-run was clean.
 
 ### 2026-09-25 — Interview + autonomous skills — merged `b9d6544`
 spec `docs/specs/2026-09-25-interview-autonomous-design.md` · plan `docs/plans/2026-09-25-interview-autonomous.md`

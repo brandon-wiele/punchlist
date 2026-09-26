@@ -17,12 +17,6 @@ move to [`history/punchlist-done.md`](history/punchlist-done.md), and stale `lat
 
 ---
 
-## Features
-
-- **P-010** · now · `/punchlist:brief [N]`: a read-only, plain-language catch-up — where the project
-  stands, the last N finished units grouped into themes, and what's next — backed by a new
-  `punchlist recent [--limit N] [--json]` command (closed units, newest first).
-
 ## Improvements
 
 - **P-001** · next · End-to-end smoke of every skill through real headless invocations
