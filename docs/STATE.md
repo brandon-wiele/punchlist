@@ -18,7 +18,7 @@
 In priority order. Details live on the PUNCHLIST item. Items tagged `needs:` aren't listed here —
 see `punchlist queue`.
 
-Nothing is workable: the rest is `later` or waits on the owner (P-014 unblocks the eval suite).
+Nothing is workable: everything left is `later` or waits on the owner — see `punchlist queue`.
 
 ## Orientation (read before substantive work)
 
