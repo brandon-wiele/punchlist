@@ -6,10 +6,10 @@
 
 ## Snapshot — 2026-09-26
 
-- **Branch:** `main` @ `3d83f3d`, clean. Sessions never push; the maintainer runs `just publish`.
+- **Branch:** `main` @ `a41bbfe`, clean. Sessions never push; the maintainer runs `just publish`.
 - **Last shipped:** v0.6.0 (released locally, not yet published). Unreleased since: lint checks the
   docs index and archive links (P-004); item ages blame each file once (P-007); `:add`, `:review`
-  and `:tidy` fix only lint errors they caused (P-008, P-015).
+  and `:tidy` fix only lint errors they caused (P-008, P-015); README rewritten for adopters.
 - **In flight:** nothing active. The eval-suite work in progress is parked on branch
   `punchlist/P-001-eval-slice-1` (six cases written, none run); P-014 picks it up.
 - **Environment:** installed locally as `punchlist@punchlist`. Installs are cached per version (see Verbs).
