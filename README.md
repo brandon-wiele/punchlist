@@ -254,6 +254,19 @@ just publish               # push main + tags (maintainer)
 Installs are cached per plugin version, so a change reaches sessions only after `just release` and a
 restart.
 
+## Privacy
+
+punchlist collects nothing and has no telemetry. It runs entirely on your machine:
+
+- The helper script only reads and writes files in your project and runs `git`. It makes no network
+  requests.
+- `/punchlist:setup` can use your own `gh` command-line tool, if you have it, to read your repo's
+  settings and open issues when drafting the backlog.
+- Nothing is pushed anywhere unless you set `push: allowed` in `.punchlist.yml`.
+
+The commands run inside Claude Code, which handles your conversation and the files it reads under
+Anthropic's own terms and privacy policy, the same as any other Claude Code session.
+
 ## License
 
 [MIT](LICENSE)

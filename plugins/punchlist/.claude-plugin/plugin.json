@@ -9,6 +9,9 @@
   "license": "MIT",
   "repository": "https://github.com/brandon-wiele/punchlist",
   "homepage": "https://github.com/brandon-wiele/punchlist",
+  "documentationUrl": "https://github.com/brandon-wiele/punchlist#readme",
+  "supportUrl": "https://github.com/brandon-wiele/punchlist/issues",
+  "privacyPolicyUrl": "https://github.com/brandon-wiele/punchlist#privacy",
   "keywords": [
     "continuity",
     "handoff",
