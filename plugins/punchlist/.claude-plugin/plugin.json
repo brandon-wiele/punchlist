@@ -2,7 +2,7 @@
   "name": "punchlist",
   "displayName": "Punchlist",
   "description": "Keeps long-running AI-assisted projects oriented: a lean STATE doc, a single backlog and a history, with commands to catch up, work items one at a time or unattended, capture ideas, clear the decisions waiting on you, and hand off cleanly.",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "author": {
     "name": "Brandon Wiele"
   },
