@@ -1,7 +1,7 @@
 {
   "name": "punchlist",
   "description": "Session continuity for long-running AI-assisted projects: STATE + PUNCHLIST + history docs, handoffs, one-item-at-a-time work, codebase reviews, and a lint/compact script that keeps it all small.",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "author": {
     "name": "punchlist contributors"
   },
