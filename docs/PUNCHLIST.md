@@ -36,8 +36,4 @@ move to [`history/punchlist-done.md`](history/punchlist-done.md), and stale `lat
 ## Ops / manual
 
 - **P-005** · later · List the plugin in community Claude Code plugin marketplaces once P-001 passes.
-- **P-009** · now · Release and dogfood P-006 with the maintainer: `just release minor`,
-  `/reload-plugins`, run `/punchlist:interview` on this repo, then `/punchlist:autonomous 2`
-  with the maintainer saying "stop" mid-unit (checks: research subagents return every brief
-  field; AskUserQuestion accepts `preview`; owner stop). Plan:
-  `docs/plans/2026-09-25-interview-autonomous.md` Task 8. `needs: action` `from: P-006`
+  `needs: action`
