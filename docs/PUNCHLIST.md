@@ -6,7 +6,7 @@ move to [`history/punchlist-done.md`](history/punchlist-done.md), and stale `lat
 
 ## Conventions
 
-- **ID** — `P-###`, never reused, never renumbered. Next free ID: **P-007**.
+- **ID** — `P-###`, never reused, never renumbered. Next free ID: **P-010**.
 - **Priority** — `now` (blocking or next up), `next` (queued), `later` (parked or nice-to-have).
   One line per item plus ≤ 3 lines of context; link out for the rest.
 - **Adding** — `/punchlist:add`, or append under the right section with `punchlist next-id --bump`.
@@ -17,13 +17,6 @@ move to [`history/punchlist-done.md`](history/punchlist-done.md), and stale `lat
 
 ---
 
-## Features
-
-- **P-006** · now · `/punchlist:interview` (clear items that need the owner, PM-style briefs) and
-  `/punchlist:autonomous` (serial subagent loop over `:next`), plus a `needs:` item marker and a
-  `punchlist queue` command. Spec: `docs/specs/2026-09-25-interview-autonomous-design.md`,
-  plan: `docs/plans/2026-09-25-interview-autonomous.md`.
-
 ## Improvements
 
 - **P-001** · next · End-to-end smoke of every skill through real headless invocations
@@ -32,7 +25,19 @@ move to [`history/punchlist-done.md`](history/punchlist-done.md), and stale `lat
   dry-run scenarios.
 - **P-004** · later · `lint` could check that `docs/README.md` (tidy's index) lists every current doc
   and that no current doc links into the archive.
+- **P-007** · later · `_item_age_days` runs one `git blame` per line of an item (up to 5 per
+  `later` item; compact calls it twice), and `punchlist queue` now runs after every
+  `/punchlist:autonomous` unit — use one `git blame -L start,end` per item instead.
+  `plugins/punchlist/lib/punchlist_core.py`. `from: P-006`
+- **P-008** · later · `/punchlist:add` step 6 says "fix any ERROR" from `punchlist lint`, which
+  can lead it to "fix" unrelated pre-existing errors (e.g. a stale snapshot); scope it to errors
+  its own edit caused and report the rest, as `/punchlist:interview` now does. `from: P-006`
 
 ## Ops / manual
 
 - **P-005** · later · List the plugin in community Claude Code plugin marketplaces once P-001 passes.
+- **P-009** · now · Release and dogfood P-006 with the maintainer: `just release minor`,
+  `/reload-plugins`, run `/punchlist:interview` on this repo, then `/punchlist:autonomous 2`
+  with the maintainer saying "stop" mid-unit (checks: research subagents return every brief
+  field; AskUserQuestion accepts `preview`; owner stop). Plan:
+  `docs/plans/2026-09-25-interview-autonomous.md` Task 8. `needs: action` `from: P-006`

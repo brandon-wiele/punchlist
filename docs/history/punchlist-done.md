@@ -8,3 +8,11 @@ followed by its own indented line `  — DONE YYYY-MM-DD (<sha>): <what shipped>
 - **P-002** · next · `/punchlist:setup` **upgrade** mode (re-run with an existing `.punchlist.yml`)
   has never been exercised; test it and the managed-block re-sync.
   — DONE 2026-09-23 (no code change): exercised on a real adopted project via /punchlist:setup — block re-synced (2-line diff), text outside the markers untouched, lint clean. Also confirmed `${CLAUDE_PLUGIN_ROOT}` expands in SKILL.md at load.
+
+## Features
+
+- **P-006** · now · `/punchlist:interview` (clear items that need the owner, PM-style briefs) and
+  `/punchlist:autonomous` (serial subagent loop over `:next`), plus a `needs:` item marker and a
+  `punchlist queue` command. Spec: `docs/specs/2026-09-25-interview-autonomous-design.md`,
+  plan: `docs/plans/2026-09-25-interview-autonomous.md`.
+  — DONE 2026-09-25 (b9d6544): /punchlist:interview + /punchlist:autonomous, needs: marker, punchlist queue.
