@@ -9,7 +9,8 @@
 - **Branch:** `main` @ `c525a12`, clean. Sessions never push; the maintainer runs `just publish`.
 - **Last shipped:** v0.6.0 — /punchlist:brief and `punchlist recent` (P-010), on top of v0.5.0
   (interview + autonomous). Both released locally, not yet published (`just publish`).
-- **In flight:** nothing.
+- **In flight:** nothing active. The eval-suite work in progress is parked on branch
+  `punchlist/P-001-eval-slice-1` (six cases written, none run); P-014 picks it up.
 - **Environment:** installed locally as `punchlist@punchlist`. Installs are cached per version (see Verbs).
 
 ## Next up
@@ -17,7 +18,7 @@
 In priority order. Details live on the PUNCHLIST item. Items tagged `needs:` aren't listed here —
 see `punchlist queue`.
 
-1. P-001 — eval suite slice 1 (`claude plugin eval`); spec and plan written, start with the spike.
+Nothing is workable: the rest is `later` or waits on the owner (P-014 unblocks the eval suite).
 
 ## Orientation (read before substantive work)
 

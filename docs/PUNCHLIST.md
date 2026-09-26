@@ -6,7 +6,7 @@ move to [`history/punchlist-done.md`](history/punchlist-done.md), and stale `lat
 
 ## Conventions
 
-- **ID** — `P-###`, never reused, never renumbered. Next free ID: **P-014**.
+- **ID** — `P-###`, never reused, never renumbered. Next free ID: **P-015**.
 - **Priority** — `now` (blocking or next up), `next` (queued), `later` (parked or nice-to-have).
   One line per item plus ≤ 3 lines of context; link out for the rest.
 - **Adding** — `/punchlist:add`, or append under the right section with `punchlist next-id --bump`.
@@ -19,14 +19,10 @@ move to [`history/punchlist-done.md`](history/punchlist-done.md), and stale `lat
 
 ## Improvements
 
-- **P-001** · next · End-to-end skill evals with `claude plugin eval`, slice 1: the harness plus
-  smoke cases for add, next, handoff, brief and setup. Spec `docs/specs/2026-09-26-eval-suite-design.md`,
-  plan `docs/plans/2026-09-26-eval-suite-slice-1.md` (task 1 is a spike).
-  (2026-09-26: spec and plan written, absorbing P-003; remains: build slice 1)
-- **P-011** · later · Eval suite slice 2: cases for setup upgrade, tidy, interview, autonomous
-  (`slow`) and review (`slow`). Spec `docs/specs/2026-09-26-eval-suite-design.md`. `from: P-001`
-- **P-013** · later · Once P-001 (eval slice 1) passes: replace CLAUDE.md rule 4's hand-run dry runs
-  with `just eval`, and match `docs/design.md` Testing. P-001's last plan task promotes this. `from: P-001`
+- **P-011** · later · Eval suite slice 2, after P-014: cases for setup upgrade, tidy, interview,
+  autonomous (`slow`) and review (`slow`). Spec `docs/specs/2026-09-26-eval-suite-design.md`. `from: P-001`
+- **P-013** · later · Once the eval smoke suite runs and passes (P-014): replace CLAUDE.md rule 4's
+  hand-run dry runs with `just eval`, and match `docs/design.md` Testing. `from: P-001`
   Ruling 2026-09-26: yes, switch rule 4 to `just eval` — the owner's call on a contract change.
 - **P-004** · later · `lint` could check that `docs/README.md` (tidy's index) lists every current doc
   and that no current doc links into the archive.
@@ -40,5 +36,9 @@ move to [`history/punchlist-done.md`](history/punchlist-done.md), and stale `lat
 
 ## Ops / manual
 
+- **P-014** · later · Get the eval smoke suite running. Here `claude plugin eval` refuses Bash-granting
+  runs: `~/.docker` holds a symlink its sandbox can't exclude. Fix that (`find ~/.docker -type l`), then
+  finish branch `punchlist/P-001-eval-slice-1` from plan task 1 (spike; six cases written, unrun).
+  `needs: action` `from: P-001`
 - **P-005** · later · List the plugin in community Claude Code plugin marketplaces once P-001 passes.
   `needs: action`

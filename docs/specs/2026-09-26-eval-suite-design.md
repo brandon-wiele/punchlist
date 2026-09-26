@@ -102,6 +102,13 @@ A `claude -p` harness would reimplement all of this.
   `_lib/fixture.sh` (via `$(dirname "$0")`); whether `tool_used: Skill` fires for a slash-command
   prompt; the time and cost of one run.
 
+## Status (2026-09-26)
+
+The spike couldn't run: `claude plugin eval` refuses Bash-granting runs on this machine because
+`~/.docker` holds a symlink its sandbox can't exclude. The owner verified the skills end to end by
+hand and closed P-001. The shared fixture, six smoke cases and `just eval` are parked on branch
+`punchlist/P-001-eval-slice-1`; P-014 resumes them from the spike once the blocker is fixed.
+
 ## Risks
 
 - **Flakiness.** Model-driven skills vary between runs. Loose graders, and in full mode a

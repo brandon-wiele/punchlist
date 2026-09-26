@@ -11,6 +11,11 @@ followed by its own indented line `  — DONE YYYY-MM-DD (<sha>): <what shipped>
 - **P-003** · later · Automated skill regression suite via `claude plugin eval`, replacing hand-run
   dry-run scenarios.
   — DROPPED 2026-09-26: merged into P-001 — the eval suite it proposed is now P-001's approach.
+- **P-001** · next · End-to-end skill evals with `claude plugin eval`, slice 1: the harness plus
+  smoke cases for add, next, handoff, brief and setup. Spec `docs/specs/2026-09-26-eval-suite-design.md`,
+  plan `docs/plans/2026-09-26-eval-suite-slice-1.md` (task 1 is a spike).
+  (2026-09-26: spec and plan written, absorbing P-003; remains: build slice 1)
+  — DONE 2026-09-26 (manual): the owner tested the skills end to end by hand on several projects; the eval suite continues as P-014.
 
 ## Features
 
