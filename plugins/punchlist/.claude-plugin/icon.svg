@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256" role="img" aria-label="Punchlist">
+  <rect width="256" height="256" rx="56" fill="#1E293B"/>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="52" y="58" width="36" height="36" rx="9" stroke="#F59E0B" stroke-width="8"/>
+    <path d="M60 76 l8 8 l14 -16" stroke="#F59E0B" stroke-width="9"/>
+    <path d="M112 76 H204" stroke="#E2E8F0" stroke-width="12"/>
+    <rect x="52" y="110" width="36" height="36" rx="9" stroke="#F59E0B" stroke-width="8"/>
+    <path d="M60 128 l8 8 l14 -16" stroke="#F59E0B" stroke-width="9"/>
+    <path d="M112 128 H184" stroke="#E2E8F0" stroke-width="12"/>
+    <rect x="52" y="162" width="36" height="36" rx="9" stroke="#94A3B8" stroke-width="8"/>
+    <path d="M112 180 H196" stroke="#94A3B8" stroke-width="12"/>
+  </g>
+</svg>
