@@ -32,9 +32,9 @@ STATE.
 
 Workflow skills: `/punchlist:next [P-###|finding-ID]` works one backlog unit end to end ·
 `/punchlist:autonomous [max]` works units unattended, one at a time ·
-`/punchlist:interview` clears items waiting on the owner · `/punchlist:add` captures an item ·
-`/punchlist:handoff` closes a session · `/punchlist:review` audits the codebase · `/punchlist:tidy`
-triages stale docs (archive, index, rewrite P-items).
+`/punchlist:interview` clears items waiting on the owner · `/punchlist:brief` catches you up ·
+`/punchlist:add` captures an item · `/punchlist:handoff` closes a session · `/punchlist:review`
+audits the codebase · `/punchlist:tidy` triages stale docs (archive, index, rewrite P-items).
 **Don't build from anything in `docs/archive/`.**
 
 ## Planning weight — size the process to the change

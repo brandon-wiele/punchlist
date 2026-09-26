@@ -23,6 +23,7 @@ back to designs the project abandoned.
 | `/punchlist:setup` | Add the system to a new or existing project (seeds from the repo), or upgrade it |
 | `/punchlist:next [P-###\|finding]` | Work one backlog unit end to end: pick → build → gates → merge → retire |
 | `/punchlist:autonomous [max]` | Work the backlog unattended: one subagent per `:next` unit, strictly serial, stopping on failure or when only owner items remain; ends with a review of the run. Never pushes |
+| `/punchlist:brief [N]` | Catch up in plain language: where the project stands, what the last N finished units built and why it matters, and what's next. Read-only |
 | `/punchlist:interview [IDs\|group]` | Clear what waits on you: researched, PM-style briefs for decisions, rulings, manual tasks and stale items, asked in batches and recorded |
 | `/punchlist:add <text>` | Capture an item under the next free ID |
 | `/punchlist:handoff` | End-of-session routine, plus lint and compact |
@@ -50,6 +51,7 @@ plugins/punchlist/bin/punchlist [--root <project>] <command>
   status [--write]    open/done counts; --write regenerates the code-review roll-up
   next-id [--bump]    the next free P-ID
   queue [--json]      workable / needs-you / triage lists — the pick order the skills use
+  recent [--limit N]  the last N finished units, newest first (for /punchlist:brief)
   lint                budgets and consistency checks; exits 1 on any ERROR
   compact [--apply]   collapse closed findings, park stale `later` items
   docs [--under P]    staleness evidence for /punchlist:tidy

@@ -27,10 +27,11 @@ adopt it in one command, and so its maintenance is mostly mechanical.
 | `.punchlist.yml` (project root) | Per-project config: docs dir, base branch, branch prefix, push policy, owner, gate commands (optionally path-conditional), budgets |
 | `reference/formats.md` | The single normative definition of every document format, ID scheme, status vocabulary and read rule |
 | `reference/templates/` | Starting files that setup copies in: STATE, PUNCHLIST, build-log, punchlist-done, parked, the CLAUDE.md block, the review README, and the reviewer brief |
-| `bin/punchlist` | Python 3 (stdlib only) CLI: `status`, `lint`, `next-id`, `queue`, `compact`, `config`, `docs` |
+| `bin/punchlist` | Python 3 (stdlib only) CLI: `status`, `lint`, `next-id`, `queue`, `recent`, `compact`, `config`, `docs` |
 | `skills/setup` | Scaffold a new project or seed an existing one from its repo; idempotent re-run upgrades the managed CLAUDE.md block and adds missing files |
 | `skills/next` | Work one backlog unit end to end: pick → build → gates → merge → retire |
 | `skills/autonomous` | Orchestrate `:next` units through background subagents, one at a time; check after each unit; stop on failure, cap or owner-only items; compact, review the run, report. Never pushes |
+| `skills/brief` | Read-only catch-up for the owner: STATE, the last N finished units (`punchlist recent`) grouped into themes with build-log context, and what's next from `punchlist queue`, in plain language |
 | `skills/interview` | Collect items tagged `needs:`, `needs-ruling:` findings and stale `later` items; research decisions in parallel; ask the owner in batches with a recommendation; record rulings, retirements and triage |
 | `skills/handoff` | End-of-session routine + lint + compact |
 | `skills/review` | Parallel whole-codebase review into `code-review/`, with generated roll-up and an umbrella P-item |
@@ -53,6 +54,9 @@ Project-specific rules stay outside it.
 - `punchlist queue [--json]` — the pick order: `workable` (Next up → `now` → `next`, no `needs:`, no
   `later`), `needs` (tagged items and `needs-ruling:` findings) and `triage` (untagged `later` items
   older than `triage_after_days`). Read-only.
+- `punchlist recent [--limit N] [--json]` — the last N finished units, newest first: done P-items
+  (`DONE` lines; `DROPPED` excluded) and findings with `Status: fixed <sha>`. Ordered by closing date,
+  ties broken by the closing commit's time; findings are dated by that commit. Read-only.
 - `punchlist lint` — `ERROR`/`WARN` lines with file:line; exit 1 on any ERROR. Checks: STATE and
   PUNCHLIST line budgets; build-log entry length; STATE snapshot SHA exists and no code commits
   landed after it; P-ID both open and done; duplicate P-IDs; counter ≤ max ID; invalid finding status;

@@ -48,6 +48,9 @@ SNAPSHOT_SHA_RE = re.compile(r"\*\*Branch:\*\*.*?@ `([0-9a-f]{7,40})`")
 BUILD_ENTRY_RE = re.compile(r"^### (\d{4}-\d{2}-\d{2})")
 ANY_ITEM_START_RE = re.compile(r"^- \*\*(P-\d+)\*\*")
 ANY_ID_RE = re.compile(r"\bP-(\d{3,})\b")
+DONE_RE = re.compile(r"—\s*DONE (\d{4}-\d{2}-\d{2}) \(([^)]*)\):\s*(.*)$")
+FIXED_STATUS_RE = re.compile(r"^fixed ([0-9a-f]{7,40})\b")
+SHA_RE = re.compile(r"[0-9a-f]{7,40}")
 NEEDS_RE = re.compile(r"`needs:\s*([^`]+)`")
 MAX_ITEM_LINES = 5  # the item line + up to 3 context lines + a progress note
 ROLLUP_BEGIN = "<!-- punchlist:status:begin -->"
@@ -435,6 +438,91 @@ def queue(root: Path, age_days: Callable | None = None) -> dict:
             triage.append(dict(entry(item), age_days=age))
 
     return {"workable": workable, "needs": needs, "triage": triage}
+
+
+# --- recent -------------------------------------------------------------------------------------
+
+
+def _commit_times(root: Path, shas: list) -> dict:
+    """{sha as written: (unix time, YYYY-MM-DD)} for each sha that names a commit in this repo."""
+    candidates = sorted({sha for sha in shas if sha and SHA_RE.fullmatch(sha)})
+    if not candidates:
+        return {}
+    # Two git calls in total, however many units: resolve every sha at once, then date them at once.
+    check = subprocess.run(
+        ["git", "-C", str(root), "cat-file", "--batch-check=%(objectname) %(objecttype)"],
+        input="".join(f"{sha}\n" for sha in candidates),
+        capture_output=True,
+        text=True,
+    )
+    full_by_sha = {}
+    for sha, line in zip(candidates, check.stdout.splitlines()):
+        parts = line.split()
+        if len(parts) == 2 and parts[1] == "commit":
+            full_by_sha[sha] = parts[0]
+    if not full_by_sha:
+        return {}
+    shown = _git(root, "show", "-s", "--format=%H %ct %cs", *full_by_sha.values())
+    times_by_full = {}
+    for line in shown.stdout.splitlines():
+        full, timestamp, date = line.split()
+        times_by_full[full] = (int(timestamp), date)
+    return {sha: times_by_full[full] for sha, full in full_by_sha.items() if full in times_by_full}
+
+
+def recent(root: Path, limit: int = 5) -> list:
+    """The last `limit` finished units (done P-items and fixed findings), newest first. Writes nothing."""
+    root = Path(root)
+    config = load_config(root)
+    docs = _docs(root, config)
+    units = []
+
+    done_path = docs / "history" / "punchlist-done.md"
+    if done_path.exists():
+        parsed = parse_punchlist(done_path.read_text())
+        for item in parsed["items"]:
+            text = _item_text(parsed["lines"], item)
+            done = DONE_RE.search(text)
+            if not done:
+                continue  # DROPPED items and pre-format entries aren't built work
+            written = done.group(2).strip()
+            units.append({
+                "id": item["id"],
+                "kind": "item",
+                "closed": done.group(1),
+                "sha": written if SHA_RE.fullmatch(written) else None,
+                "section": item["section"],
+                "text": text[: done.start()].strip(),
+                "note": done.group(3).strip(),
+            })
+
+    for path in _finding_files(root, config):
+        for finding in parse_findings(path.read_text()):
+            fixed = FIXED_STATUS_RE.match(finding["status"] or "")
+            if not fixed:
+                continue
+            units.append({
+                "id": finding["id"],
+                "kind": "finding",
+                "closed": None,
+                "sha": fixed.group(1),
+                "section": path.name,
+                "text": finding["title"],
+                "note": None,
+            })
+
+    times = _commit_times(root, [unit["sha"] for unit in units])
+    for unit in units:
+        if unit["closed"] is None and unit["sha"] in times:
+            unit["closed"] = times[unit["sha"]][1]
+
+    def newest_first(unit: dict) -> tuple:
+        # The closing date decides; the commit's time breaks ties within a day. Undated units sort last.
+        timestamp, _date = times.get(unit["sha"], (0, None))
+        return (unit["closed"] or "", timestamp)
+
+    units.sort(key=newest_first, reverse=True)
+    return units[:limit]
 
 
 # --- git helpers --------------------------------------------------------------------------------

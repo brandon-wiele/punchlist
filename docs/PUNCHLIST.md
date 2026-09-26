@@ -6,7 +6,7 @@ move to [`history/punchlist-done.md`](history/punchlist-done.md), and stale `lat
 
 ## Conventions
 
-- **ID** — `P-###`, never reused, never renumbered. Next free ID: **P-010**.
+- **ID** — `P-###`, never reused, never renumbered. Next free ID: **P-011**.
 - **Priority** — `now` (blocking or next up), `next` (queued), `later` (parked or nice-to-have).
   One line per item plus ≤ 3 lines of context; link out for the rest.
 - **Adding** — `/punchlist:add`, or append under the right section with `punchlist next-id --bump`.
@@ -16,6 +16,12 @@ move to [`history/punchlist-done.md`](history/punchlist-done.md), and stale `lat
   `— DONE YYYY-MM-DD (<sha>): <what shipped>`. `/punchlist:next` does this. Ship with `just release`.
 
 ---
+
+## Features
+
+- **P-010** · now · `/punchlist:brief [N]`: a read-only, plain-language catch-up — where the project
+  stands, the last N finished units grouped into themes, and what's next — backed by a new
+  `punchlist recent [--limit N] [--json]` command (closed units, newest first).
 
 ## Improvements
 

@@ -687,6 +687,92 @@ class ItemAgeTest(unittest.TestCase):
             fixture.close()
 
 
+def commit_at(root, message, when):
+    """Commit all tracked changes with a fixed author and committer date (ISO 8601, local time)."""
+    env = dict(os.environ, GIT_AUTHOR_DATE=when, GIT_COMMITTER_DATE=when)
+    subprocess.run(["git", "-C", str(root), "commit", "-qam", message], check=True, capture_output=True, text=True, env=env)
+    return git(root, "rev-parse", "--short", "HEAD")
+
+
+class RecentTest(unittest.TestCase):
+    def fixture_with_two_fixes_on_one_day(self):
+        fixture = ProjectFixture()
+        (fixture.root / "src" / "app.txt").write_text("v2\n")
+        morning = commit_at(fixture.root, "first fix", "2026-09-20T09:00:00")
+        (fixture.root / "src" / "app.txt").write_text("v3\n")
+        evening = commit_at(fixture.root, "second fix", "2026-09-20T18:00:00")
+        return fixture, morning, evening
+
+    def test_done_items_come_newest_first_and_commit_time_breaks_same_day_ties(self):
+        fixture, morning, evening = self.fixture_with_two_fixes_on_one_day()
+        try:
+            done = DONE + textwrap.dedent(
+                f"""\
+
+                ## Features
+
+                - **P-010** · next · Morning thing.
+                  — DONE 2026-09-20 ({morning}): shipped in the morning.
+                - **P-011** · next · Evening thing.
+                  — DONE 2026-09-20 ({evening}): shipped in the evening.
+                - **P-012** · later · A task the owner did.
+                  — DONE 2026-09-22 (manual): done by hand.
+                - **P-013** · later · An idea we dropped.
+                  — DROPPED 2026-09-23: not needed.
+                """
+            )
+            (fixture.root / "docs" / "history" / "punchlist-done.md").write_text(done)
+            units = core.recent(fixture.root, limit=10)
+            # API-002's "fixed abc1234" names no commit here, so it has no date and sorts last.
+            self.assertEqual([unit["id"] for unit in units], ["P-012", "P-011", "P-010", "P-004", "API-002"])
+            self.assertEqual(
+                units[1],
+                {"id": "P-011", "kind": "item", "closed": "2026-09-20", "sha": evening, "section": "Features",
+                 "text": "Evening thing.", "note": "shipped in the evening."},
+            )
+            self.assertIsNone(units[0]["sha"])  # done by hand: no commit
+            self.assertEqual(units[3]["text"], "Crash on save.")  # an inline DONE suffix is cut from the text
+        finally:
+            fixture.close()
+
+    def test_fixed_findings_are_dated_by_the_fixing_commit(self):
+        fixture, _morning, evening = self.fixture_with_two_fixes_on_one_day()
+        try:
+            findings = fixture.root / "docs" / "code-review" / "01-api.md"
+            findings.write_text(FINDINGS.replace("fixed abc1234", f"fixed {evening}"))
+            units = core.recent(fixture.root, limit=10)
+            self.assertEqual([unit["id"] for unit in units], ["API-002", "P-004"])  # wontfix and open findings aren't built work
+            self.assertEqual(
+                units[0],
+                {"id": "API-002", "kind": "finding", "closed": "2026-09-20", "sha": evening, "section": "01-api.md",
+                 "text": "Leaky sessions", "note": None},
+            )
+        finally:
+            fixture.close()
+
+    def test_limit_keeps_the_newest_and_missing_history_is_empty(self):
+        fixture = ProjectFixture()
+        try:
+            self.assertEqual([unit["id"] for unit in core.recent(fixture.root, limit=1)], ["P-004"])
+            (fixture.root / "docs" / "history" / "punchlist-done.md").unlink()
+            (fixture.root / "docs" / "code-review" / "01-api.md").unlink()
+            self.assertEqual(core.recent(fixture.root), [])
+        finally:
+            fixture.close()
+
+    def test_cli_recent_json_and_plain(self):
+        fixture = ProjectFixture()
+        try:
+            as_json = subprocess.run([sys.executable, str(BIN), "recent", "--json"], cwd=fixture.root, capture_output=True, text=True)
+            self.assertEqual(as_json.returncode, 0, as_json.stderr)
+            self.assertEqual([unit["id"] for unit in json.loads(as_json.stdout)], ["P-004", "API-002"])
+            plain = subprocess.run([sys.executable, str(BIN), "recent", "--limit", "1"], cwd=fixture.root, capture_output=True, text=True)
+            self.assertIn("2026-09-01 · P-004 · Crash on save.", plain.stdout)
+            self.assertNotIn("API-002", plain.stdout)
+        finally:
+            fixture.close()
+
+
 class CliTest(unittest.TestCase):
     def test_cli_runs_from_any_cwd_and_lint_exit_code(self):
         fixture = ProjectFixture()

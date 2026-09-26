@@ -7,6 +7,7 @@ Usage: punchlist <command> [options]   (run from anywhere inside the project's g
   status [--write]    open/done counts; --write regenerates the code-review README roll-up
   next-id [--bump]    the next free P-ID; --bump advances the counter in PUNCHLIST.md
   queue [--json]      what's workable (in pick order), what needs the owner, what's due for triage
+  recent [--limit N] [--json]   the last N finished units (done items, fixed findings), newest first
   lint                check budgets and consistency; exit 1 on any ERROR
   compact [--apply]   collapse closed findings, park stale `later` items; shows a diff, writes with --apply
   docs [--under P] [--json]   evidence for /punchlist:tidy: per-folder summary, or per-file rows under a path
@@ -46,6 +47,9 @@ def main(argv=None) -> int:
     next_parser.add_argument("--bump", action="store_true")
     queue_parser = commands.add_parser("queue")
     queue_parser.add_argument("--json", action="store_true")
+    recent_parser = commands.add_parser("recent")
+    recent_parser.add_argument("--limit", type=int, default=5)
+    recent_parser.add_argument("--json", action="store_true")
     commands.add_parser("lint")
     compact_parser = commands.add_parser("compact")
     compact_parser.add_argument("--apply", action="store_true")
@@ -81,6 +85,15 @@ def main(argv=None) -> int:
                         print(f"  {entry['file']}: {entry['open']} open ({severities or '-'}), {entry['closed']} closed")
         elif args.command == "next-id":
             print(core.next_id(root, bump=args.bump))
+        elif args.command == "recent":
+            units = core.recent(root, limit=args.limit)
+            if args.json:
+                print(json.dumps(units, indent=2))
+            elif not units:
+                print("recent: no finished units yet", file=sys.stderr)
+            else:
+                for unit in units:
+                    print(f"  {unit['closed'] or 'undated'} · {unit['id']} · {unit['text'][:100]}")
         elif args.command == "queue":
             result = core.queue(root)
             if args.json:
