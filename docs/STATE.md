@@ -6,8 +6,9 @@
 
 ## Snapshot — 2026-09-26
 
-- **Branch:** `main` @ `bb6a9ad`, clean. Sessions never push; the maintainer runs `just publish`.
-- **Last shipped:** `:add` no longer fixes lint errors it didn't cause (P-008; unreleased). Before
+- **Branch:** `main` @ `0e58fde`, clean. Sessions never push; the maintainer runs `just publish`.
+- **Last shipped:** `:add`, `:review` and `:tidy` no longer fix lint errors they didn't cause (P-008,
+  P-015; unreleased). Before
   that, v0.6.0 — /punchlist:brief and `punchlist recent` — released locally, not yet published.
 - **In flight:** nothing active. The eval-suite work in progress is parked on branch
   `punchlist/P-001-eval-slice-1` (six cases written, none run); P-014 picks it up.

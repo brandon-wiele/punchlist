@@ -20,6 +20,10 @@ followed by its own indented line `  — DONE YYYY-MM-DD (<sha>): <what shipped>
   can lead it to "fix" unrelated pre-existing errors (e.g. a stale snapshot); scope it to errors
   its own edit caused and report the rest, as `/punchlist:interview` now does. `from: P-006`
   — DONE 2026-09-26 (bb6a9ad): `:add` fixes only lint errors its edit caused and names the rest; dry run showed the old wording rewrote STATE.
+- **P-015** · later · `/punchlist:review` (step 5) and `/punchlist:tidy` (step 8) also say "fix every
+  ERROR" from `punchlist lint`, so they can rewrite a stale STATE snapshot that isn't theirs. Scope
+  them the way P-008 scoped `:add` (fix what your edits caused, name the rest). `from: P-008`
+  — DONE 2026-09-26 (0e58fde): review and tidy fix only lint errors their edits caused and report the rest.
 
 ## Features
 
