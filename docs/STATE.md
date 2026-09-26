@@ -7,8 +7,8 @@
 ## Snapshot — 2026-09-26
 
 - **Branch:** `main` @ `c525a12`, clean. Sessions never push; the maintainer runs `just publish`.
-- **Last shipped:** /punchlist:brief and `punchlist recent` (P-010), on top of v0.5.0
-  (interview + autonomous). Unreleased: needs `just release minor`; v0.5.0 is released locally, not published.
+- **Last shipped:** v0.6.0 — /punchlist:brief and `punchlist recent` (P-010), on top of v0.5.0
+  (interview + autonomous). Both released locally, not yet published (`just publish`).
 - **In flight:** nothing.
 - **Environment:** installed locally as `punchlist@punchlist`. Installs are cached per version (see Verbs).
 
@@ -57,7 +57,7 @@ see `punchlist queue`.
 
 ## Recent milestones (last ~8 — full index in [`history/build-log.md`](history/build-log.md))
 
-- 2026-09-26 — P-010: /punchlist:brief, a plain-language catch-up, and `punchlist recent` (unreleased)
+- 2026-09-26 — P-010: /punchlist:brief, a plain-language catch-up, and `punchlist recent` (v0.6.0)
 - 2026-09-25 — P-006: /punchlist:interview and /punchlist:autonomous, needs: marker, punchlist queue (v0.5.0)
 - 2026-09-23 — v0.4.0, first public release
 
