@@ -114,14 +114,16 @@ row with its question. Wait for approval, and apply the user's edits to the tabl
    record docs plus a pointer to the archive.
 7. **STATE Orientation:** make sure it names only current docs, and that it warns against the
    archive.
-8. `$PL lint` (fix every ERROR), then re-run `$PL docs` to confirm no *current* doc has dangling
+8. `$PL lint`: fix every ERROR your edits caused, and leave any that were already there (a stale
+   snapshot, say) for the report. Then re-run `$PL docs` to confirm no *current* doc has dangling
    references you introduced.
 9. Commit only these files, as `docs: tidy — archive N, index M, file P-###…`, on the base branch.
 
 ## 5. Report
 
-Give counts per verdict, the archived docs with one-line reasons, the P-items filed, and the answers
-still needed. If more than a quarter of the current docs are drifting, say so plainly and suggest
+Give counts per verdict, the archived docs with one-line reasons, the P-items filed, the answers
+still needed, and any lint errors you left (with the skill that fixes them, usually
+`/punchlist:handoff`). If more than a quarter of the current docs are drifting, say so plainly and suggest
 rewriting the orientation docs first, since they're what every session reads.
 
 ## Re-running

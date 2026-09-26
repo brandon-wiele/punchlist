@@ -67,12 +67,14 @@ Write `<docs>/code-review/README.md` from `review-readme.md`:
 - Put the umbrella at the top of STATE "Next up" unless something is blocking. Findings that need an
   owner ruling carry `Status: needs-ruling: <question>`; that status is the record, so don't list
   them in STATE.
-- `$PL lint`, fix every ERROR, and commit as `docs(code-review): <date> whole-codebase review
-  (<N> findings)`.
+- `$PL lint`. Fix every ERROR your edits caused; leave any that were already there (a stale
+  snapshot, say) and name them in the report. Commit as `docs(code-review): <date> whole-codebase
+  review (<N> findings)`.
 
 ## 6. Report
 
 Give the total counts by severity, the themes as one line each (flagging rulings needed), and the
 Fix-first list. Then give an honest overall-health paragraph: what's structurally sound, where
 coupling or leftover code accumulates, and what to do about it. Offer to file structural
-recommendations as P-items.
+recommendations as P-items. Name any lint errors you left and the skill that fixes them (usually
+`/punchlist:handoff`).
