@@ -27,9 +27,9 @@ move to [`history/punchlist-done.md`](history/punchlist-done.md), and stale `lat
 
 ## Ops / manual
 
-- **P-014** · later · Get the eval smoke suite running. Here `claude plugin eval` refuses Bash-granting
-  runs: `~/.docker` holds a symlink its sandbox can't exclude. Fix that (`find ~/.docker -type l`), then
-  finish branch `punchlist/P-001-eval-slice-1` from plan task 1 (spike; six cases written, unrun).
-  `needs: action` `from: P-001`
+- **P-014** · later · Run the eval suite from an environment whose `~/.docker` has no symlinks inside
+  (another user account, a VM or another machine); this one's Docker setup stays as it is. Resume
+  branch `punchlist/P-001-eval-slice-1` at plan task 1 (six cases written, unrun). `needs: action` `from: P-001`
+  Ruling 2026-09-26: the owner won't change this machine's Docker config; park until then.
 - **P-005** · later · List the plugin in community Claude Code plugin marketplaces once P-001 passes.
   `needs: action`
