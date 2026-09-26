@@ -30,6 +30,7 @@ adopt it in one command, and so its maintenance is mostly mechanical.
 | `bin/punchlist` | Python 3 (stdlib only) CLI: `status`, `lint`, `next-id`, `queue`, `compact`, `config`, `docs` |
 | `skills/setup` | Scaffold a new project or seed an existing one from its repo; idempotent re-run upgrades the managed CLAUDE.md block and adds missing files |
 | `skills/next` | Work one backlog unit end to end: pick → build → gates → merge → retire |
+| `skills/interview` | Collect items tagged `needs:`, `needs-ruling:` findings and stale `later` items; research decisions in parallel; ask the owner in batches with a recommendation; record rulings, retirements and triage |
 | `skills/handoff` | End-of-session routine + lint + compact |
 | `skills/review` | Parallel whole-codebase review into `code-review/`, with generated roll-up and an umbrella P-item |
 | `skills/add` | Quick capture of a backlog item |

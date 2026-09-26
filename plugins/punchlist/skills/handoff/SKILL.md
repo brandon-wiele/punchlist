@@ -68,5 +68,5 @@ Report in ≤ 10 lines:
 2. What was retired.
 3. New P-IDs.
 4. The top of Next up.
-5. Anything waiting on the owner.
+5. What waits on the owner: the `needs` group of `$PL queue` (count and IDs). Suggest `/punchlist:interview` if it isn't empty.
 6. The lint result.

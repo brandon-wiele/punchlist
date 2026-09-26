@@ -22,6 +22,7 @@ back to designs the project abandoned.
 |---|---|
 | `/punchlist:setup` | Add the system to a new or existing project (seeds from the repo), or upgrade it |
 | `/punchlist:next [P-###\|finding]` | Work one backlog unit end to end: pick → build → gates → merge → retire |
+| `/punchlist:interview [IDs\|group]` | Clear what waits on you: researched, PM-style briefs for decisions, rulings, manual tasks and stale items, asked in batches and recorded |
 | `/punchlist:add <text>` | Capture an item under the next free ID |
 | `/punchlist:handoff` | End-of-session routine, plus lint and compact |
 | `/punchlist:review` | Parallel whole-codebase review into `docs/code-review/`, wired into the backlog |
