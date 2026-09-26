@@ -18,8 +18,9 @@ If there's no `.punchlist.yml`, stop and suggest `/punchlist:setup`.
 
 ## 1. Preflight
 
-Run `git status`. If tracked files outside `<docs>/` are modified, stop and say so: this skill
-commits bookkeeping on the current branch and must not tangle it with other work.
+Run `git status`. If any tracked file is modified, stop and say so: this skill commits its
+bookkeeping on the current branch and must not tangle it with other work, including unrelated doc
+edits.
 
 ## 2. Build the queue
 
@@ -28,8 +29,10 @@ commits bookkeeping on the current branch and must not tangle it with other work
   `triage`).
 - Read `<docs>/PUNCHLIST.md` whole and look for **untagged** items only the owner can move: the
   Ops / manual section, or wording like decide, choose, confirm, approve, sign off, credentials,
-  publish. If there are any, ask once, as a multi-select `AskUserQuestion`, which really need the
-  owner. Tag those `needs: decision` or `needs: action` and add them to the queue.
+  publish. Ask about those first, up to 4 per `AskUserQuestion` call, one question per item: "Does
+  this need you?", with the options **Needs your decision** · **Needs you to do it** · **No — a
+  session can do it**. Tag the first two answers `needs: decision` or `needs: action` and add those
+  items to the queue; leave the rest untouched.
 - A tagged `decision` that fails the formats.md criteria for `needs: decision` stays in the queue, but
   its recommended option is **"Your call"**: you decide, record the ruling, and remove the tag.
 - **Empty queue:** report "Nothing needs you — <N> items are workable." and suggest
