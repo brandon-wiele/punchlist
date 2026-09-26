@@ -7,7 +7,8 @@
 ## Snapshot — 2026-09-26
 
 - **Branch:** `main` @ `0d37924`, clean. Sessions never push; the maintainer runs `just publish`.
-- **Last shipped:** v0.7.1 (author, marketplace owner and LICENSE now Brandon Wiele) on v0.7.0 — lint checks the docs index and archive links, faster item ages, `:add`/
+- **Last shipped:** v0.7.2 (plugin icon) and v0.7.1 (author, marketplace owner and LICENSE now
+  Brandon Wiele) on v0.7.0 — lint checks the docs index and archive links, faster item ages, `:add`/
   `:review`/`:tidy` fix only lint errors they caused, README rewritten for adopters, directory-ready
   plugin metadata. Released locally, not yet published (`just publish`).
 - **In flight:** nothing active. The eval-suite work in progress is parked on branch

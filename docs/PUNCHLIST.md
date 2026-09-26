@@ -33,4 +33,4 @@ move to [`history/punchlist-done.md`](history/punchlist-done.md), and stale `lat
   Ruling 2026-09-26: the owner won't change this machine's Docker config; park until then.
 - **P-005** · later · List the plugin in Anthropic's plugin directory (https://claude.ai/directory/manage;
   needs a public repo and a paid plan). `needs: action`
-  (2026-09-26: metadata, author and LICENSE done, v0.7.1 released 22f3cb1; remains: `just publish`, then submit)
+  (2026-09-26: metadata, author, LICENSE and icon done, v0.7.2 released; remains: `just publish`, then submit)
