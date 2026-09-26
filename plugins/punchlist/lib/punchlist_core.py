@@ -710,7 +710,61 @@ def lint(root: Path, age_days: Callable | None = None) -> list:
                 add("ERROR", path, line, f"{finding['id']}: status '{finding['status']}' is not open/needs-ruling:/fixed <sha>/wontfix:/dup of <ID>")
             if finding["severity"] not in SEVERITIES:
                 add("ERROR", path, finding["start"] + 1, f"{finding['id']}: severity '{finding['severity']}' is not one of {', '.join(SEVERITIES)}")
+
+    for level, path, line, message in _docs_index_findings(root, config):
+        add(level, path, line, message)
     return found
+
+
+def _resolved_references(root: Path, doc: Path) -> set:
+    """The existing paths a doc links to (files, or directories ending in "/"), relative to the root."""
+    targets = set()
+    for ref in _references(doc.read_text(errors="replace")):
+        for base in (doc.parent, root):
+            candidate = (base / ref.lstrip("/")).resolve()
+            if not candidate.exists():
+                continue
+            try:
+                relative = str(candidate.relative_to(root.resolve()))
+            except ValueError:
+                break
+            targets.add(relative + "/" if candidate.is_dir() else relative)
+            break
+    return targets
+
+
+def _docs_index_findings(root: Path, config: dict) -> list:
+    """WARNs for the docs index (<docs>/README.md, written by /punchlist:tidy) and the archive.
+
+    Every doc must be linked from the index, directly or through a linked folder. A doc outside the
+    archive must not link to a file inside it; the index and the history files are exempt.
+    """
+    docs_dir = config["docs_dir"].rstrip("/")
+    docs = _docs(root, config)
+    index = docs / "README.md"
+    archive = f"{docs_dir}/archive/"
+    excludes = list(config.get("docs_exclude") or [])
+    all_docs = sorted(str(path.relative_to(root)) for path in docs.rglob("*.md"))
+    all_docs = [doc for doc in all_docs if not any(fnmatch.fnmatch(doc, glob) for glob in excludes)]
+    findings = []
+
+    if index.exists():
+        linked = _resolved_references(root, index)
+        linked_dirs = [target for target in linked if target.endswith("/")]
+        for doc in all_docs:
+            if doc == f"{docs_dir}/README.md" or doc.startswith(archive):
+                continue
+            if doc in linked or any(doc.startswith(folder) for folder in linked_dirs):
+                continue
+            findings.append(("WARN", doc, 0, f"{doc} isn't in the docs index ({docs_dir}/README.md) — add a row or archive it"))
+
+    for doc in all_docs:
+        if doc == f"{docs_dir}/README.md" or doc.startswith(archive) or doc.startswith(f"{docs_dir}/history/"):
+            continue
+        for target in sorted(_resolved_references(root, root / doc)):
+            if target.startswith(archive) and not target.endswith("/"):
+                findings.append(("WARN", doc, 0, f"{doc} links into the archive ({target[len(docs_dir) + 1:]}) — point at the current doc instead"))
+    return findings
 
 
 # --- compact ------------------------------------------------------------------------------------

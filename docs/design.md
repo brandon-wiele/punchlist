@@ -61,7 +61,8 @@ Project-specific rules stay outside it.
   PUNCHLIST line budgets; build-log entry length; STATE snapshot SHA exists and no code commits
   landed after it; P-ID both open and done; duplicate P-IDs; counter ≤ max ID; invalid finding status;
   `later` items whose newest line is older than the stale threshold (WARN); Next up naming a done item; malformed items;
-  items over 5 lines (WARN); a snapshot claiming `clean` while *code* is uncommitted (WARN); an unknown or doubled `needs:` marker; Next up naming a `needs:` item (WARN); a leftover `Waiting on` line (WARN).
+  items over 5 lines (WARN); a snapshot claiming `clean` while *code* is uncommitted (WARN); an unknown or doubled `needs:` marker; Next up naming a `needs:` item (WARN); a leftover `Waiting on` line (WARN); once `<docs>/README.md`
+  exists, a doc it doesn't link directly or via a folder (WARN) and a current doc linking into the archive (WARN).
 - `punchlist docs [--under P] [--json]` — evidence for tidy: per-folder summary or per-file rows: lines,
   last change, inbound links, dangling refs (forgivingly resolved) and the subset that existed in git
   history, whether history files mention it, commit-message mentions.

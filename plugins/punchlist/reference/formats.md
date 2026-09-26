@@ -216,6 +216,10 @@ table row is `| [doc](path) | what it covers | status |`, where status is one of
 Only docs that a future session might read are listed. Plans and specs are covered by the build-log
 index, not listed one by one.
 
+Once the index exists, `punchlist lint` warns about any doc under `<docs>` that it doesn't link,
+directly or through a linked folder (the archive is exempt), and about any doc outside the archive
+and `history/` that links to a file inside the archive.
+
 ## Archive — `<docs>/archive/README.md`
 
 Starts with **"Superseded. Do not derive scope or code from anything here."** followed by a table:

@@ -831,6 +831,53 @@ class BlameAgeTest(unittest.TestCase):
             fixture.close()
 
 
+class DocsIndexLintTest(unittest.TestCase):
+    def messages(self, fixture):
+        return [(level, message) for level, _p, _l, message in core.lint(fixture.root, age_days=lambda *_: 0)]
+
+    def write(self, fixture, relative, text):
+        path = fixture.root / "docs" / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text)
+
+    def test_no_index_means_no_index_checks(self):
+        fixture = ProjectFixture()
+        try:
+            self.write(fixture, "guide.md", "# Guide\n")
+            self.assertFalse(any("index" in message for _level, message in self.messages(fixture)))
+        finally:
+            fixture.close()
+
+    def test_every_doc_must_be_linked_directly_or_through_a_folder(self):
+        fixture = ProjectFixture()
+        try:
+            self.write(fixture, "README.md",
+                       "# Docs\n\n| [STATE](STATE.md) | position | current |\n| [PUNCHLIST](PUNCHLIST.md) | backlog | current |\n"
+                       "| [history](history/) | records | done |\n| [code review](code-review/) | findings | current |\n"
+                       "| [specs](specs/) | specs | current |\n")
+            self.write(fixture, "specs/2026-09-01-thing.md", "# Spec\n")  # covered by the specs/ folder row
+            self.write(fixture, "guide.md", "# Guide\n")  # not in the index
+            self.write(fixture, "archive/old.md", "# Old\n")  # the archive is exempt
+            warnings = [message for level, message in self.messages(fixture) if level == "WARN"]
+            self.assertEqual([m for m in warnings if "index" in m], ["docs/guide.md isn't in the docs index (docs/README.md) — add a row or archive it"])
+        finally:
+            fixture.close()
+
+    def test_current_docs_must_not_link_into_the_archive(self):
+        fixture = ProjectFixture()
+        try:
+            self.write(fixture, "archive/README.md", "Superseded. Do not derive scope or code from anything here.\n")
+            self.write(fixture, "archive/old-design.md", "# Old design\n")
+            self.write(fixture, "guide.md", "See [the old design](archive/old-design.md).\n")
+            self.write(fixture, "notes.md", "Never build from `docs/archive/`.\n")  # naming the folder is a warning, not a link
+            self.write(fixture, "history/build-log.md", "Spec: [old](../archive/old-design.md)\n")  # records may point back
+            self.write(fixture, "README.md", "Start at [STATE](STATE.md). Old docs: [archive](archive/README.md).\n")  # the index may
+            warnings = [message for level, message in self.messages(fixture) if level == "WARN" and "links into the archive" in message]
+            self.assertEqual(warnings, ["docs/guide.md links into the archive (archive/old-design.md) — point at the current doc instead"])
+        finally:
+            fixture.close()
+
+
 class CliTest(unittest.TestCase):
     def test_cli_runs_from_any_cwd_and_lint_exit_code(self):
         fixture = ProjectFixture()
