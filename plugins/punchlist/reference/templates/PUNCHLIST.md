@@ -11,6 +11,8 @@ move to [`history/punchlist-done.md`](history/punchlist-done.md), and stale `lat
   One line per item plus ≤ 3 lines of context; link out for the rest.
 - **Adding** — `/punchlist:add`, or append under the right section with `punchlist next-id --bump`.
   Deferrals from shipped work get their own item, tagged `from:`.
+- **Waiting on the owner** — tag the item `` `needs: decision` `` or `` `needs: action` ``
+  (formats.md has the criteria). `/punchlist:interview` clears them; sessions skip them.
 - **Closing** — move the whole item to `history/punchlist-done.md` with
   `— DONE YYYY-MM-DD (<sha>): <what shipped>`. `/punchlist:next` does this.
 

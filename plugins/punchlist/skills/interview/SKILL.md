@@ -27,12 +27,14 @@ edits.
 - Run `$PL queue --json`. Take `needs` (kinds `decision`, `action`, `ruling`) and `triage`. An
   argument narrows it: specific IDs, or one group (`decisions` = decision + ruling, `actions`,
   `triage`).
+- If STATE still has a legacy `**Waiting on …:**` line, treat every item it names as an owner
+  candidate (below), then delete the line.
 - Read `<docs>/PUNCHLIST.md` whole and look for **untagged** items only the owner can move: the
   Ops / manual section, or wording like decide, choose, confirm, approve, sign off, credentials,
   publish. Ask about those first, up to 4 per `AskUserQuestion` call, one question per item: "Does
   this need you?", with the options **Needs your decision** · **Needs you to do it** · **No — a
   session can do it**. Tag the first two answers `needs: decision` or `needs: action` and add those
-  items to the queue; leave the rest untouched.
+  items to the queue, removing them from STATE's Next up if listed; leave the rest untouched.
 - A tagged `decision` that fails the formats.md criteria for `needs: decision` stays in the queue, but
   its recommended option is **"Your call"**: you decide, record the ruling, and remove the tag.
 - **Empty queue:** report "Nothing needs you — <N> items are workable." and suggest
@@ -40,9 +42,9 @@ edits.
 
 ## 3. Research before asking
 
-For each `decision` and `ruling` entry, dispatch a **read-only** subagent (Explore, if available).
-Send them all in one message so they run in parallel. Give each the entry's JSON, the project root
-and this brief:
+For each `decision` and `ruling` entry, dispatch a **read-only** analysis subagent (the `Plan` agent
+if available, otherwise general-purpose). Send them all in one message so they run in parallel. Give
+each the entry's JSON, the project root and this brief:
 
 > Research this backlog item so the owner can decide it in under a minute. Read what it links to
 > (spec, plan, code, the code-review finding), its history (`git log -S` / `--grep`), and any
@@ -77,9 +79,9 @@ Action and triage briefs leave out the **Recommend** line unless you have a real
 
 For each question:
 - `header`: ≤ 12 characters naming the topic, not the ID.
-- The recommended option comes first, its label ending in "(Recommended)". Each option's
-  `description` is its one-line trade-off (cost · risk · reversibility); its `preview` holds the full
-  option and its "After" line.
+- For decisions and rulings, the recommended option comes first, its label ending in "(Recommended)".
+  Each option's `description` is its one-line trade-off (cost · risk · reversibility); its `preview`
+  holds the full option and its "After" line.
 - **Decisions and rulings:** the researched options, plus **Not now** (leave it tagged) when there
   are fewer than 4.
 - **Actions:** **Done** · **Not yet** · **Drop it**.
@@ -116,7 +118,7 @@ Anything else an answer spawns (new follow-up work, a new question) becomes a ne
 ## 6. Wrap — also when the owner stops partway
 
 - If an answer made an item `now`, add it to STATE's Next up in order.
-- Run `$PL lint` and fix every ERROR.
+- Run `$PL lint`. Fix every ERROR your edits caused; report any that were already there.
 - Commit only `<docs>/` changes, as `docs(punchlist): interview — <n> resolved`.
 - Report in ≤ 8 lines: what was resolved (by kind), what still waits (IDs), new items, and "<N> items
   are workable now". Suggest `/punchlist:autonomous` when N > 0.
@@ -127,7 +129,7 @@ Anything else an answer spawns (new follow-up work, a new question) becomes a ne
 |---|---|
 | Leading with "P-012: …" or pasting the item text | Lead with the plain-language headline; the ID is a footnote |
 | Options without cost or reversibility | Every option says what it costs and how hard it is to undo |
-| No recommendation | Always recommend one; the owner can overrule it |
+| A decision or ruling with no recommendation | Always recommend one; the owner can overrule it |
 | Asking before researching | Research every decision first, in parallel |
 | One question per call when several are ready | Batch up to 4 |
 | Recording everything at the end | Record each batch before asking the next |

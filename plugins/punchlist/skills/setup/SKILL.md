@@ -78,6 +78,8 @@ Backlog sources:
     refs.
   - Each item names its source: `from: TODO.md` or `from: #123` for migrated items, and
     `from: setup scan` for items found by inspecting the repo.
+  - Items only the owner can move (a decision, credentials, publishing, a manual check) get
+    `needs: decision` or `needs: action` (formats.md criteria).
   - Priorities: `now` only for what is clearly blocking or in progress. Old or speculative items are
     `later`.
   - IDs start at P-001.

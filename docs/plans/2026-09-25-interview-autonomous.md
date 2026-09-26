@@ -1502,10 +1502,14 @@ Expected: fast-forward; lint `0 error(s)`. Do not push.
   tool and subagents load v0.5.0.
 - [ ] **Step 3:** Run `/punchlist:interview` on this repo. Expected queue: P-005 (a real
   `needs: action` candidate — offer to tag it in the heuristic sweep) plus any triage-due `later`
-  items. Check the briefs against Task 6 Step 3's pass criteria, live.
+  items. Check the briefs against Task 6 Step 3's pass criteria, live. Also confirm, live, that the
+  research subagents return every brief field and that AskUserQuestion accepts the `preview` option
+  field.
 - [ ] **Step 4:** Run `/punchlist:autonomous 2` on this repo and have the maintainer say "stop" while
   the first unit runs. Pass: the unit finishes, the checks run, the run stops with "stopped by owner",
-  and the review and report still happen.
+  and the review and report still happen. Note: after P-006 retires, this repo's only workable item
+  is P-001 (large — headless smoke); `:next` should size it as large and write a spec/plan as its
+  unit, or queue a small item first for the owner-stop test.
 - [ ] **Step 5:** Anything found becomes a P-item (`from: P-006`). If the P-item from Task 7 Step 5
   was filed, retire it (`— DONE <date> (manual): dogfooded`). Commit
   `docs(punchlist): dogfood interview + autonomous`. The maintainer publishes with `just publish`.

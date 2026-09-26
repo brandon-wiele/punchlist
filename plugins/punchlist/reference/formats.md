@@ -41,8 +41,8 @@ uncommitted state — or "nothing"), `**Environment:**`.
 `## Next up` is a numbered list whose entries lead with P-IDs, in the order to do them: `now` items
 first, then whichever `next` item unblocks the most. When nothing is `now`, list the top `next`
 items. Items waiting on the owner aren't listed here: their `needs:` marker in PUNCHLIST is the only
-record, and `punchlist queue` lists them. `lint` errors if Next up names a done item, and warns if it names a `needs:` item or if STATE
-still has a `**Waiting on …:**` line (the older format).
+record, and `punchlist queue` lists them. `lint` errors if Next up names a done item, and warns if
+it names a `needs:` item or if STATE still has a `**Waiting on …:**` line (the older format).
 
 ## PUNCHLIST.md
 
@@ -87,6 +87,10 @@ in order, is Bugs · Features · Improvements · Follow-ups from shipped work ·
 - A ruling recorded on an item is a continuation line `  Ruling YYYY-MM-DD: <answer> — <why>`. If that
   would take the item past 5 lines, put the ruling in the linked spec's Rulings and link it.
 - A triaged-and-kept `later` item gets `(YYYY-MM-DD: triaged — keep, <why>)`, which resets its age.
+- An action the owner hasn't done yet can get `(YYYY-MM-DD: not yet — <reason>)`, like any progress
+  note.
+- The marker is matched as `` `needs: <kind>` `` (the space is optional). Any code span of that shape
+  in an item tags it, so quote the word without the colon when writing about markers in prose.
 
 ## Pick order — `punchlist queue`
 

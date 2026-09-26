@@ -48,7 +48,7 @@ SNAPSHOT_SHA_RE = re.compile(r"\*\*Branch:\*\*.*?@ `([0-9a-f]{7,40})`")
 BUILD_ENTRY_RE = re.compile(r"^### (\d{4}-\d{2}-\d{2})")
 ANY_ITEM_START_RE = re.compile(r"^- \*\*(P-\d+)\*\*")
 ANY_ID_RE = re.compile(r"\bP-(\d{3,})\b")
-NEEDS_RE = re.compile(r"`needs: ([^`]*)`")
+NEEDS_RE = re.compile(r"`needs:\s*([^`]+)`")
 MAX_ITEM_LINES = 5  # the item line + up to 3 context lines + a progress note
 ROLLUP_BEGIN = "<!-- punchlist:status:begin -->"
 ROLLUP_END = "<!-- punchlist:status:end -->"
@@ -546,12 +546,18 @@ def lint(root: Path, age_days: Callable | None = None) -> list:
         for number, line in _next_up_lines(state_text):
             if line.startswith("**Waiting on"):
                 continue
-            for match in ANY_ID_RE.finditer(line):
+            matches = list(ANY_ID_RE.finditer(line))
+            leading_id = f"P-{matches[0].group(1)}" if matches else None
+            for match in matches:
                 item_id = f"P-{match.group(1)}"
                 if item_id in done_ids and item_id not in open_ids:
                     add("ERROR", state, number + 1, f"Next up lists {item_id}, which is done — refresh Next up")
                 elif item_id not in open_ids:
                     add("WARN", state, number + 1, f"Next up lists {item_id}, which isn't an open PUNCHLIST item")
+                elif item_id != leading_id:
+                    continue
+                elif open_ids[item_id]["priority"] == "later":
+                    add("WARN", state, number + 1, f"Next up lists {item_id}, a `later` item — promote it or remove it from Next up")
                 elif open_ids[item_id]["needs"]:
                     add("WARN", state, number + 1, f"Next up lists {item_id}, which needs the owner (`needs: {open_ids[item_id]['needs'][0]}`) — sessions will skip it")
 

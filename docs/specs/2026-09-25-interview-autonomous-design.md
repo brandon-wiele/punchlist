@@ -86,7 +86,8 @@ live/manual checks against production or hardware.
    are offered back with "Your call" as the recommended option.
 3. **Empty queue** → report "nothing needs you; N workable items" and suggest `:autonomous`. Stop.
 4. **Research in parallel.** For each `decision` and `ruling` entry, dispatch a read-only subagent
-   (Explore) that reads the linked spec, code, finding and relevant git history and returns a brief:
+   (the `Plan` agent if available, otherwise general-purpose) that reads the linked spec, code,
+   finding and relevant git history and returns a brief:
    - **Headline** in plain language (the P-ID is a footnote, never the headline).
    - **Why it's blocked** and what it holds up (items with `from:` pointing at it, Next up position).
    - **2–3 options**, each with engineering cost, risk and reversibility.
@@ -130,8 +131,8 @@ live/manual checks against production or hardware.
    ERROR; `outcome` isn't `failed`. Any failure → **stop the run** (R4); report the subagent's
    report, the branch left behind and the exact next step. Never clean up or stash.
 4. **Stop conditions.** Workable queue empty · only `needs:` items remain · `max-units` reached
-   (default 10) · a check fails · the same ID is dispatched a third time in one run (not converging)
-   · the owner asks to stop.
+   (default 10) · a check fails · the same ID comes back right after a unit for it that made no
+   progress (not converging) · the owner asks to stop.
 5. **Wrap.** `$PL compact` and apply it unless it parks an item touched this run; `$PL lint`; commit
    `docs(punchlist): autonomous run — <n> units` if anything changed.
 6. **Review the run (R10).** If any unit committed code, dispatch one read-only reviewer subagent over
@@ -182,6 +183,8 @@ The orchestrator never reads code; its context holds only queue JSON, unit repor
   a run between units without killing a unit mid-merge.
 - **R10** — One review per run, not per unit: it points the owner's review at the units that need
   it, at the cost of one agent. It is advisory and never blocks or reverts.
+- **R11** — Convergence is judged by progress, not dispatch count: an umbrella item legitimately
+  returns after every unit that closes a Fix-first row. (Amends §4.4; from the final review.)
 
 ## Testing
 

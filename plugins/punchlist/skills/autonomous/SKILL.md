@@ -21,6 +21,8 @@ If there's no `.punchlist.yml`, stop and suggest `/punchlist:setup`.
 
 - `git status`: you're on `base_branch` and no tracked files are modified.
 - `$PL lint` has no ERROR. Every unit's retire runs lint, so an existing error would fail them all.
+- If `$PL lint` warns about a legacy `Waiting on` line, stop and suggest `/punchlist:setup` (upgrade)
+  or `/punchlist:interview`: the items it names aren't tagged yet and would be picked as workable.
 - `$PL queue --json` has at least one `workable` entry. If not, report the `needs` and `triage`
   counts, suggest `/punchlist:interview` if either is non-zero, and stop.
 - Record `START=$(git rev-parse --short HEAD)`.
@@ -30,8 +32,10 @@ If there's no `.punchlist.yml`, stop and suggest `/punchlist:setup`.
 
 ## 2. The loop — one unit at a time
 
-1. Run `$PL queue --json` and take the first `workable` entry. If that ID has already been dispatched
-   twice this run, stop: it isn't converging.
+1. If a §4 stop condition holds, go to §5. Otherwise run `$PL queue --json` and take the first
+   `workable` entry. If it is the same ID as the previous unit and that unit made no progress
+   (`code_sha: -` and outcome `skipped` or `partial`), stop: it isn't converging. An ID that comes
+   back after a unit that committed code — an umbrella working its Fix-first rows — is progress.
 2. Dispatch **one** general-purpose subagent **in the background** with the prompt below, then wait
    for its completion notification. Dispatch nothing else in the meantime.
 
@@ -50,7 +54,8 @@ If there's no `.punchlist.yml`, stop and suggest `/punchlist:setup`.
    > needs_you: <IDs with one line each, or ->
    > notes: <≤ 3 lines>
 
-3. Run the checks in §3, then go back to step 1.
+3. Run the checks in §3, then go back to step 1. A reply that is missing, cut off or doesn't follow
+   the line format counts as `outcome: failed`.
 
 While a unit runs, the owner may message you. If they say to stop, let the unit finish, run the
 checks, and stop with the reason "stopped by owner". Answer anything else from what you already know;
@@ -71,7 +76,7 @@ and go to the review and report.
 - No `workable` entries are left.
 - `max-units` units have run.
 - A check in §3 failed.
-- The next ID would be dispatched a third time.
+- The same ID came back right after a unit for it that made no progress (§2 step 1).
 - The owner asked to stop.
 
 ## 5. Wrap
@@ -79,13 +84,13 @@ and go to the review and report.
 1. **Only if the last checks passed:** run `$PL compact`. Apply it with `$PL compact --apply` unless
    it parks an item this run touched. Run `$PL lint`. If anything changed, commit it as
    `docs(punchlist): autonomous run — <n> units`.
-2. **Review the run.** If `git log --oneline START..HEAD -- . ':(exclude)<docs>'` lists any commit,
-   dispatch one read-only reviewer subagent (use `superpowers:requesting-code-review` if it's
-   available) with:
-   > Review `git diff <START>..HEAD` in `<project root>`, unit by unit. Units: <one line each: ID —
-   > item text — code_sha>. For each unit, reply `<ID>: fine` or `<ID>: look at this — <why>
-   > (<file:line>)`. Look for correctness bugs, changes outside the item's scope, and tests that don't
-   > exercise the change. Don't edit anything.
+2. **Review the run.** If `git log --oneline START..<base_branch> -- . ':(exclude)<docs>'` lists any
+   commit, dispatch one read-only reviewer subagent (use `superpowers:requesting-code-review` if
+   it's available) with:
+   > Review `git diff <START>..<base_branch>` in `<project root>`, unit by unit. Units: <one line
+   > each: ID — item text — code_sha>. For each unit, reply `<ID>: fine` or `<ID>: look at this —
+   > <why> (<file:line>)`. Look for correctness bugs, changes outside the item's scope, and tests
+   > that don't exercise the change. Don't edit anything.
 
    The review is advisory. It never fixes, reverts or stops anything.
 3. If this session has a push-notification tool, send one line:
@@ -101,7 +106,7 @@ Autonomous run — <n> units, stopped: <reason>
 | P-### <short text> | done | abc1234 | fine |
 
 New items: P-### …
-Review before publishing: git log --oneline <START>..HEAD — nothing was pushed.
+Review before publishing: git log --oneline <START>..<base_branch> — nothing was pushed.
 <N> items need you — run /punchlist:interview
 ```
 

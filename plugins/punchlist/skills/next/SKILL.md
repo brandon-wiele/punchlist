@@ -29,10 +29,10 @@ Run `git status` and `git log --oneline -5`. If tracked files are modified or yo
 
 | Situation | The unit is |
 |---|---|
-| Argument given | That item or finding. If it carries `needs:`, or only the owner can do it, say so and stop. |
+| Argument given | That item or finding. If it carries `needs:`, say so and stop. If only the owner can do it but it isn't tagged, tag it as the owner-only row says, then stop. |
 | No argument | The first `workable` entry of `$PL queue --json` (Next up, then `now`, then `next`; items tagged `needs:` and `later` items are excluded) |
 | The item is an **umbrella** (points at a code-review Fix-first table) | The first Fix-first row whose findings aren't all closed |
-| Only the owner can do it (formats.md § `needs:` criteria) | **Skip it**: tag it `needs: decision` or `needs: action`, stating the question or task plainly in the item; name it in the report; move on |
+| Only the owner can do it (formats.md § `needs:` criteria) | **Skip it**: tag it `needs: decision` or `needs: action`, stating the question or task plainly in the item; drop it from STATE's Next up if listed; name it in the report; move on |
 | A choice comes up that doesn't meet those criteria | Decide it, record `Ruling YYYY-MM-DD: …` on the item (or in the spec's Rulings), keep going |
 | A finding is `needs-ruling:`, or the fix would change a documented contract in CLAUDE.md | Skip it; set its Status to `needs-ruling: <question>` if it isn't already; put the question in the report |
 

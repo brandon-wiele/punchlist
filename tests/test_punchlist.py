@@ -386,6 +386,27 @@ class NeedsLintTest(unittest.TestCase):
         finally:
             fixture.close()
 
+    def test_next_up_needs_warn_checks_only_the_leading_id(self):
+        # P-005 is only mentioned in passing on this line; P-002 (the leading ID) has no `needs:`.
+        fixture = ProjectFixture(punchlist=NEEDS_PUNCHLIST)
+        try:
+            state = fixture.root / "docs" / "STATE.md"
+            state.write_text(state.read_text().replace("1. P-001", "1. P-002 — after P-005 lands"))
+            warnings = [m for level, m in self.lint_messages(fixture) if level == "WARN"]
+            self.assertFalse(any("P-005" in m for m in warnings))
+        finally:
+            fixture.close()
+
+    def test_next_up_naming_a_later_item_warns(self):
+        fixture = ProjectFixture(punchlist=NEEDS_PUNCHLIST)
+        try:
+            state = fixture.root / "docs" / "STATE.md"
+            state.write_text(state.read_text().replace("1. P-001", "1. P-003"))
+            warnings = [m for level, m in self.lint_messages(fixture) if level == "WARN"]
+            self.assertTrue(any("P-003" in m and "later" in m for m in warnings))
+        finally:
+            fixture.close()
+
 
 class QueueTest(unittest.TestCase):
     def test_workable_order_follows_next_up_then_now_then_next(self):
@@ -425,6 +446,55 @@ class QueueTest(unittest.TestCase):
             old = core.queue(fixture.root, age_days=lambda *_: 45)
             self.assertEqual([(entry["id"], entry["age_days"]) for entry in old["triage"]], [("P-003", 45)])  # P-008 is tagged: it's in needs
             self.assertNotIn("P-003", [entry["id"] for entry in old["workable"]])  # later items are never workable
+        finally:
+            fixture.close()
+
+    def test_needs_marker_without_a_space_parses_and_is_not_workable(self):
+        punchlist = NEEDS_PUNCHLIST.replace("`needs: action`", "`needs:action`")
+        fixture = ProjectFixture(punchlist=punchlist)
+        try:
+            items = {item["id"]: item for item in core.parse_punchlist(punchlist)["items"]}
+            self.assertEqual(items["P-006"]["needs"], ["action"])
+            workable_ids = [entry["id"] for entry in core.queue(fixture.root, age_days=lambda *_: 0)["workable"]]
+            self.assertNotIn("P-006", workable_ids)
+        finally:
+            fixture.close()
+
+    def test_next_up_naming_a_later_item_is_not_workable(self):
+        fixture = ProjectFixture()
+        try:
+            state = fixture.root / "docs" / "STATE.md"
+            state.write_text(state.read_text().replace("1. P-001", "1. P-003"))
+            workable_ids = [entry["id"] for entry in core.queue(fixture.root, age_days=lambda *_: 0)["workable"]]
+            self.assertNotIn("P-003", workable_ids)
+        finally:
+            fixture.close()
+
+    def test_next_up_naming_a_done_id_and_an_unknown_id_are_skipped_without_error(self):
+        fixture = ProjectFixture()
+        try:
+            state = fixture.root / "docs" / "STATE.md"
+            state.write_text(state.read_text().replace("1. P-001", "1. P-004\n2. P-099"))
+            workable_ids = [entry["id"] for entry in core.queue(fixture.root, age_days=lambda *_: 0)["workable"]]
+            self.assertEqual(workable_ids, ["P-001", "P-002"])
+        finally:
+            fixture.close()
+
+    def test_no_state_file_workable_falls_back_to_now_then_next(self):
+        fixture = ProjectFixture()
+        try:
+            (fixture.root / "docs" / "STATE.md").unlink()
+            workable_ids = [entry["id"] for entry in core.queue(fixture.root, age_days=lambda *_: 0)["workable"]]
+            self.assertEqual(workable_ids, ["P-001", "P-002"])
+        finally:
+            fixture.close()
+
+    def test_no_punchlist_file_raises_punchlist_error(self):
+        fixture = ProjectFixture()
+        try:
+            (fixture.root / "docs" / "PUNCHLIST.md").unlink()
+            with self.assertRaises(core.PunchlistError):
+                core.queue(fixture.root, age_days=lambda *_: 0)
         finally:
             fixture.close()
 
