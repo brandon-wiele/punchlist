@@ -25,6 +25,9 @@ move to [`history/punchlist-done.md`](history/punchlist-done.md), and stale `lat
   (2026-09-26: spec and plan written, absorbing P-003; remains: build slice 1)
 - **P-011** · later · Eval suite slice 2: cases for setup upgrade, tidy, interview, autonomous
   (`slow`) and review (`slow`). Spec `docs/specs/2026-09-26-eval-suite-design.md`. `from: P-001`
+- **P-013** · later · Once P-001 (eval slice 1) passes: replace CLAUDE.md rule 4's hand-run dry runs
+  with `just eval`, and match `docs/design.md` Testing. P-001's last plan task promotes this. `from: P-001`
+  Ruling 2026-09-26: yes, switch rule 4 to `just eval` — the owner's call on a contract change.
 - **P-004** · later · `lint` could check that `docs/README.md` (tidy's index) lists every current doc
   and that no current doc links into the archive.
 - **P-007** · later · `_item_age_days` runs one `git blame` per line of an item (up to 5 per
@@ -37,9 +40,5 @@ move to [`history/punchlist-done.md`](history/punchlist-done.md), and stale `lat
 
 ## Ops / manual
 
-- **P-012** · later · Decide whether CI runs `just eval` (the smoke eval suite): it needs an API-key
-  secret and spends money on every run. Spec D1. `needs: decision` `from: P-001`
-- **P-013** · later · Decide whether to replace CLAUDE.md rule 4's hand-run dry runs with `just eval`
-  once slice 1 passes (a contract change). Spec D2. `needs: decision` `from: P-001`
 - **P-005** · later · List the plugin in community Claude Code plugin marketplaces once P-001 passes.
   `needs: action`

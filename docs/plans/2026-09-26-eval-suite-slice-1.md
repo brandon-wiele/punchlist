@@ -112,4 +112,5 @@ graders (proof the grader measures the skill, not the model's defaults).
 ### 9. Full smoke run and close-out
 
 Run `just eval`; every smoke case passes. Record the with/without deltas and total cost in the
-build-log entry. Retire P-001 per `/punchlist:next` §4.
+build-log entry. Retire P-001 per `/punchlist:next` §4, and promote P-013 (switch rule 4 to
+`just eval`; the owner ruled yes) to `next`.

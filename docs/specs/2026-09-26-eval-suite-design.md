@@ -83,9 +83,10 @@ A `claude -p` harness would reimplement all of this.
 ## Owner decisions (filed as `needs: decision` items)
 
 - **D1 — CI (P-012).** Run the smoke suite in CI? It needs an API-key secret and spends money on
-  every run.
+  every run. **Decided 2026-09-26: no** — evals stay local.
 - **D2 — Rule 4 (P-013).** Once slice 1 passes, replace CLAUDE.md rule 4's hand-run dry runs with
-  `just eval`. That changes a documented contract, so it's the owner's call.
+  `just eval`. That changes a documented contract, so it's the owner's call. **Decided 2026-09-26:
+  yes** — done by P-013 after slice 1 passes.
 
 ## Rulings
 
@@ -94,6 +95,8 @@ A `claude -p` harness would reimplement all of this.
 - **E3** — The suite lives under `plugins/punchlist/evals/` and ships with the plugin; results are
   gitignored.
 - **E4** — `smoke` runs once per case under a cost ceiling; the full suite runs on demand.
+- **E6** — No CI: `just eval` is run locally by whoever changes skill text (owner, D1).
+- **E7** — Rule 4 switches to `just eval` once slice 1 passes (owner, D2; P-013).
 - **E5** — Unknowns are settled by a spike as slice 1's first task: what happens when a skill calls
   `AskUserQuestion` in a non-interactive run; whether a case's scaffold can call the shared
   `_lib/fixture.sh` (via `$(dirname "$0")`); whether `tool_used: Skill` fires for a slash-command

@@ -32,3 +32,6 @@ followed by its own indented line `  — DONE YYYY-MM-DD (<sha>): <what shipped>
   field; AskUserQuestion accepts `preview`; owner stop). Plan:
   `docs/plans/2026-09-25-interview-autonomous.md` Task 8. `needs: action` `from: P-006`
   — DONE 2026-09-26 (manual): v0.5.0 released; live /punchlist:interview run (preview accepted); owner closed it without the autonomous owner-stop run or a live research-subagent check.
+- **P-012** · later · Decide whether CI runs `just eval` (the smoke eval suite): it needs an API-key
+  secret and spends money on every run. Spec D1. `needs: decision` `from: P-001`
+  — DONE 2026-09-26 (manual): decided — no; the eval suite stays a local `just eval`, never run in CI.
