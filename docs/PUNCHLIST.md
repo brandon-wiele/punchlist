@@ -26,10 +26,6 @@ move to [`history/punchlist-done.md`](history/punchlist-done.md), and stale `lat
   Ruling 2026-09-26: yes, switch rule 4 to `just eval` — the owner's call on a contract change.
 - **P-004** · later · `lint` could check that `docs/README.md` (tidy's index) lists every current doc
   and that no current doc links into the archive.
-- **P-007** · later · `_item_age_days` runs one `git blame` per line of an item (up to 5 per
-  `later` item; compact calls it twice), and `punchlist queue` now runs after every
-  `/punchlist:autonomous` unit — use one `git blame -L start,end` per item instead.
-  `plugins/punchlist/lib/punchlist_core.py`. `from: P-006`
 
 ## Ops / manual
 

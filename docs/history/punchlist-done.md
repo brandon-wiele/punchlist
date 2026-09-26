@@ -24,6 +24,11 @@ followed by its own indented line `  — DONE YYYY-MM-DD (<sha>): <what shipped>
   ERROR" from `punchlist lint`, so they can rewrite a stale STATE snapshot that isn't theirs. Scope
   them the way P-008 scoped `:add` (fix what your edits caused, name the rest). `from: P-008`
   — DONE 2026-09-26 (0e58fde): review and tidy fix only lint errors their edits caused and report the rest.
+- **P-007** · later · `_item_age_days` runs one `git blame` per line of an item (up to 5 per
+  `later` item; compact calls it twice), and `punchlist queue` now runs after every
+  `/punchlist:autonomous` unit — use one `git blame -L start,end` per item instead.
+  `plugins/punchlist/lib/punchlist_core.py`. `from: P-006`
+  — DONE 2026-09-26 (c087273): one blame per file (cached per line), better than one per item; lint, compact and queue each blame PUNCHLIST once.
 
 ## Features
 
