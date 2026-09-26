@@ -6,7 +6,7 @@
 
 ## Snapshot — 2026-09-26
 
-- **Branch:** `main` @ `082395b`, clean. Sessions never push; the maintainer runs `just publish`.
+- **Branch:** `main` @ `c525a12`, clean. Sessions never push; the maintainer runs `just publish`.
 - **Last shipped:** /punchlist:brief and `punchlist recent` (P-010), on top of v0.5.0
   (interview + autonomous). Unreleased: needs `just release minor`; v0.5.0 is released locally, not published.
 - **In flight:** nothing.
