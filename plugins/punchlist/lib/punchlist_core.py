@@ -51,6 +51,7 @@ ANY_ID_RE = re.compile(r"\bP-(\d{3,})\b")
 DONE_RE = re.compile(r"—\s*DONE (\d{4}-\d{2}-\d{2}) \(([^)]*)\):\s*(.*)$")
 FIXED_STATUS_RE = re.compile(r"^fixed ([0-9a-f]{7,40})\b")
 SHA_RE = re.compile(r"[0-9a-f]{7,40}")
+BLAME_HEADER_RE = re.compile(r"^([0-9a-f]{40}) \d+ (\d+)(?: \d+)?$")
 NEEDS_RE = re.compile(r"`needs:\s*([^`]+)`")
 MAX_ITEM_LINES = 5  # the item line + up to 3 context lines + a progress note
 ROLLUP_BEGIN = "<!-- punchlist:status:begin -->"
@@ -391,7 +392,7 @@ def queue(root: Path, age_days: Callable | None = None) -> dict:
     root = Path(root)
     config = load_config(root)
     docs = _docs(root, config)
-    age_days = age_days or (lambda path, line: blame_age_days(root, path, line))
+    age_days = age_days or blame_ages(root)
     punchlist = docs / "PUNCHLIST.md"
     if not punchlist.exists():
         raise PunchlistError(f"{punchlist}: missing (run /punchlist:setup)")
@@ -532,14 +533,43 @@ def _git(root: Path, *args: str) -> subprocess.CompletedProcess:
     return subprocess.run(["git", "-C", str(root), *args], capture_output=True, text=True)
 
 
-def blame_age_days(root: Path, path: Path, line_number: int, today: _dt.date | None = None) -> int:
-    """Days since the given (0-based) line last changed, per git blame. Uncommitted lines are age 0."""
-    out = _git(root, "blame", "--porcelain", "-L", f"{line_number + 1},{line_number + 1}", "--", str(path))
-    match = re.search(r"^author-time (\d+)$", out.stdout, re.MULTILINE)
-    if out.returncode != 0 or not match:
-        return 0
-    changed = _dt.datetime.fromtimestamp(int(match.group(1)), tz=_dt.timezone.utc).date()
-    return ((today or _dt.date.today()) - changed).days
+def _blame_line_times(root: Path, path: Path) -> dict:
+    """{0-based line number: author time} for every line of `path`, from a single `git blame`."""
+    out = _git(root, "blame", "--porcelain", "--", str(path))
+    if out.returncode != 0:
+        return {}
+    time_by_sha = {}
+    sha_by_line = {}
+    current_sha = None
+    for line in out.stdout.splitlines():
+        header = BLAME_HEADER_RE.match(line)
+        if header:
+            current_sha = header.group(1)
+            sha_by_line[int(header.group(2)) - 1] = current_sha
+        elif line.startswith("author-time ") and current_sha:
+            # Porcelain prints a commit's headers only the first time the commit appears.
+            time_by_sha[current_sha] = int(line.split()[1])
+    return {number: time_by_sha[sha] for number, sha in sha_by_line.items() if sha in time_by_sha}
+
+
+def blame_ages(root: Path, today: _dt.date | None = None) -> Callable:
+    """An age_days(path, line) that blames each file once and answers every line from that.
+
+    Days since the given (0-based) line last changed. Uncommitted lines are age 0.
+    """
+    today = today or _dt.date.today()
+    times_by_path = {}
+
+    def age_days(path: Path, line_number: int) -> int:
+        if path not in times_by_path:
+            times_by_path[path] = _blame_line_times(root, path)
+        timestamp = times_by_path[path].get(line_number)
+        if timestamp is None:
+            return 0
+        changed = _dt.datetime.fromtimestamp(timestamp, tz=_dt.timezone.utc).date()
+        return (today - changed).days
+
+    return age_days
 
 
 def _item_age_days(age_days: Callable, path: Path, item: dict) -> int:
@@ -556,7 +586,7 @@ def lint(root: Path, age_days: Callable | None = None) -> list:
     config = load_config(root)
     budgets = config["budgets"]
     docs = _docs(root, config)
-    age_days = age_days or (lambda path, line: blame_age_days(root, path, line))
+    age_days = age_days or blame_ages(root)
     found = []
 
     def add(level, path, line, message):
@@ -708,7 +738,7 @@ def compact(root: Path, age_days: Callable | None = None, today: str | None = No
     root = Path(root)
     config = load_config(root)
     docs = _docs(root, config)
-    age_days = age_days or (lambda path, line: blame_age_days(root, path, line))
+    age_days = age_days or blame_ages(root)
     today = today or _dt.date.today().isoformat()
     changes = {}
 

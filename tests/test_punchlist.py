@@ -773,6 +773,64 @@ class RecentTest(unittest.TestCase):
             fixture.close()
 
 
+class BlameAgeTest(unittest.TestCase):
+    """Ages come from real `git blame` here, not an injected function."""
+
+    def fixture_with_old_and_new_later_items(self):
+        fixture = ProjectFixture(config="budgets:\n  triage_after_days: 30\n")
+        punchlist = fixture.root / "docs" / "PUNCHLIST.md"
+        punchlist.write_text(punchlist.read_text() + "- **P-020** · later · An old idea.\n  With a second line.\n")
+        commit_at(fixture.root, "old idea", "2026-01-01T12:00:00")
+        punchlist.write_text(punchlist.read_text() + "- **P-021** · later · A fresh idea.\n")
+        git(fixture.root, "commit", "-qam", "fresh idea")
+        return fixture
+
+    def count_blames(self, call):
+        original = core._git
+        blames = []
+
+        def counting(root, *args):
+            if args and args[0] == "blame":
+                blames.append(args)
+            return original(root, *args)
+
+        core._git = counting
+        try:
+            return call(), len(blames)
+        finally:
+            core._git = original
+
+    def test_queue_blames_each_file_once_however_many_items(self):
+        fixture = self.fixture_with_old_and_new_later_items()
+        try:
+            result, blames = self.count_blames(lambda: core.queue(fixture.root))
+            self.assertEqual(blames, 1)  # three `later` items, five lines, one blame of PUNCHLIST.md
+            triage_ids = [entry["id"] for entry in result["triage"]]
+            self.assertIn("P-020", triage_ids)  # committed in January: well past 30 days
+            self.assertNotIn("P-021", triage_ids)  # committed just now
+        finally:
+            fixture.close()
+
+    def test_lint_and_compact_blame_each_file_once(self):
+        fixture = self.fixture_with_old_and_new_later_items()
+        try:
+            _found, lint_blames = self.count_blames(lambda: core.lint(fixture.root))
+            _changes, compact_blames = self.count_blames(lambda: core.compact(fixture.root))
+            self.assertEqual((lint_blames, compact_blames), (1, 1))
+        finally:
+            fixture.close()
+
+    def test_an_uncommitted_edit_makes_an_item_fresh(self):
+        fixture = self.fixture_with_old_and_new_later_items()
+        try:
+            punchlist = fixture.root / "docs" / "PUNCHLIST.md"
+            punchlist.write_text(punchlist.read_text().replace("With a second line.", "With a second line, edited."))
+            triage_ids = [entry["id"] for entry in core.queue(fixture.root)["triage"]]
+            self.assertNotIn("P-020", triage_ids)  # an uncommitted line counts as changed today
+        finally:
+            fixture.close()
+
+
 class CliTest(unittest.TestCase):
     def test_cli_runs_from_any_cwd_and_lint_exit_code(self):
         fixture = ProjectFixture()
