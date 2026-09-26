@@ -6,7 +6,7 @@ move to [`history/punchlist-done.md`](history/punchlist-done.md), and stale `lat
 
 ## Conventions
 
-- **ID** — `P-###`, never reused, never renumbered. Next free ID: **P-015**.
+- **ID** — `P-###`, never reused, never renumbered. Next free ID: **P-016**.
 - **Priority** — `now` (blocking or next up), `next` (queued), `later` (parked or nice-to-have).
   One line per item plus ≤ 3 lines of context; link out for the rest.
 - **Adding** — `/punchlist:add`, or append under the right section with `punchlist next-id --bump`.
@@ -30,9 +30,9 @@ move to [`history/punchlist-done.md`](history/punchlist-done.md), and stale `lat
   `later` item; compact calls it twice), and `punchlist queue` now runs after every
   `/punchlist:autonomous` unit — use one `git blame -L start,end` per item instead.
   `plugins/punchlist/lib/punchlist_core.py`. `from: P-006`
-- **P-008** · later · `/punchlist:add` step 6 says "fix any ERROR" from `punchlist lint`, which
-  can lead it to "fix" unrelated pre-existing errors (e.g. a stale snapshot); scope it to errors
-  its own edit caused and report the rest, as `/punchlist:interview` now does. `from: P-006`
+- **P-015** · later · `/punchlist:review` (step 5) and `/punchlist:tidy` (step 8) also say "fix every
+  ERROR" from `punchlist lint`, so they can rewrite a stale STATE snapshot that isn't theirs. Scope
+  them the way P-008 scoped `:add` (fix what your edits caused, name the rest). `from: P-008`
 
 ## Ops / manual
 

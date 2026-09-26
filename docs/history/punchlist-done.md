@@ -16,6 +16,10 @@ followed by its own indented line `  — DONE YYYY-MM-DD (<sha>): <what shipped>
   plan `docs/plans/2026-09-26-eval-suite-slice-1.md` (task 1 is a spike).
   (2026-09-26: spec and plan written, absorbing P-003; remains: build slice 1)
   — DONE 2026-09-26 (manual): the owner tested the skills end to end by hand on several projects; the eval suite continues as P-014.
+- **P-008** · later · `/punchlist:add` step 6 says "fix any ERROR" from `punchlist lint`, which
+  can lead it to "fix" unrelated pre-existing errors (e.g. a stale snapshot); scope it to errors
+  its own edit caused and report the rest, as `/punchlist:interview` now does. `from: P-006`
+  — DONE 2026-09-26 (bb6a9ad): `:add` fixes only lint errors its edit caused and names the rest; dry run showed the old wording rewrote STATE.
 
 ## Features
 

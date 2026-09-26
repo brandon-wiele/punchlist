@@ -6,9 +6,9 @@
 
 ## Snapshot — 2026-09-26
 
-- **Branch:** `main` @ `c525a12`, clean. Sessions never push; the maintainer runs `just publish`.
-- **Last shipped:** v0.6.0 — /punchlist:brief and `punchlist recent` (P-010), on top of v0.5.0
-  (interview + autonomous). Both released locally, not yet published (`just publish`).
+- **Branch:** `main` @ `bb6a9ad`, clean. Sessions never push; the maintainer runs `just publish`.
+- **Last shipped:** `:add` no longer fixes lint errors it didn't cause (P-008; unreleased). Before
+  that, v0.6.0 — /punchlist:brief and `punchlist recent` — released locally, not yet published.
 - **In flight:** nothing active. The eval-suite work in progress is parked on branch
   `punchlist/P-001-eval-slice-1` (six cases written, none run); P-014 picks it up.
 - **Environment:** installed locally as `punchlist@punchlist`. Installs are cached per version (see Verbs).
