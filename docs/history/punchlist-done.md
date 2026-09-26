@@ -8,6 +8,9 @@ followed by its own indented line `  — DONE YYYY-MM-DD (<sha>): <what shipped>
 - **P-002** · next · `/punchlist:setup` **upgrade** mode (re-run with an existing `.punchlist.yml`)
   has never been exercised; test it and the managed-block re-sync.
   — DONE 2026-09-23 (no code change): exercised on a real adopted project via /punchlist:setup — block re-synced (2-line diff), text outside the markers untouched, lint clean. Also confirmed `${CLAUDE_PLUGIN_ROOT}` expands in SKILL.md at load.
+- **P-003** · later · Automated skill regression suite via `claude plugin eval`, replacing hand-run
+  dry-run scenarios.
+  — DROPPED 2026-09-26: merged into P-001 — the eval suite it proposed is now P-001's approach.
 
 ## Features
 

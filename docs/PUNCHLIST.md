@@ -6,7 +6,7 @@ move to [`history/punchlist-done.md`](history/punchlist-done.md), and stale `lat
 
 ## Conventions
 
-- **ID** — `P-###`, never reused, never renumbered. Next free ID: **P-011**.
+- **ID** — `P-###`, never reused, never renumbered. Next free ID: **P-014**.
 - **Priority** — `now` (blocking or next up), `next` (queued), `later` (parked or nice-to-have).
   One line per item plus ≤ 3 lines of context; link out for the rest.
 - **Adding** — `/punchlist:add`, or append under the right section with `punchlist next-id --bump`.
@@ -19,10 +19,12 @@ move to [`history/punchlist-done.md`](history/punchlist-done.md), and stale `lat
 
 ## Improvements
 
-- **P-001** · next · End-to-end smoke of every skill through real headless invocations
-  (`claude -p "/punchlist:<skill> …"`) against scratch repos, not just dry-run subagents.
-- **P-003** · later · Automated skill regression suite via `claude plugin eval`, replacing hand-run
-  dry-run scenarios.
+- **P-001** · next · End-to-end skill evals with `claude plugin eval`, slice 1: the harness plus
+  smoke cases for add, next, handoff, brief and setup. Spec `docs/specs/2026-09-26-eval-suite-design.md`,
+  plan `docs/plans/2026-09-26-eval-suite-slice-1.md` (task 1 is a spike).
+  (2026-09-26: spec and plan written, absorbing P-003; remains: build slice 1)
+- **P-011** · later · Eval suite slice 2: cases for setup upgrade, tidy, interview, autonomous
+  (`slow`) and review (`slow`). Spec `docs/specs/2026-09-26-eval-suite-design.md`. `from: P-001`
 - **P-004** · later · `lint` could check that `docs/README.md` (tidy's index) lists every current doc
   and that no current doc links into the archive.
 - **P-007** · later · `_item_age_days` runs one `git blame` per line of an item (up to 5 per
@@ -35,5 +37,9 @@ move to [`history/punchlist-done.md`](history/punchlist-done.md), and stale `lat
 
 ## Ops / manual
 
+- **P-012** · later · Decide whether CI runs `just eval` (the smoke eval suite): it needs an API-key
+  secret and spends money on every run. Spec D1. `needs: decision` `from: P-001`
+- **P-013** · later · Decide whether to replace CLAUDE.md rule 4's hand-run dry runs with `just eval`
+  once slice 1 passes (a contract change). Spec D2. `needs: decision` `from: P-001`
 - **P-005** · later · List the plugin in community Claude Code plugin marketplaces once P-001 passes.
   `needs: action`

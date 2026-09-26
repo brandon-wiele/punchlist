@@ -17,7 +17,7 @@
 In priority order. Details live on the PUNCHLIST item. Items tagged `needs:` aren't listed here —
 see `punchlist queue`.
 
-1. P-001 — end-to-end skill smoke via real headless invocations.
+1. P-001 — eval suite slice 1 (`claude plugin eval`); spec and plan written, start with the spike.
 
 ## Orientation (read before substantive work)
 
