@@ -29,11 +29,14 @@ argument-hint: "<what to capture>"
    has the criteria) and keep it out of Next up. A request that says the owner must decide ("we need
    to decide whether …") is the owner's decision: tag it `needs: decision`. Otherwise, if it's `now`
    and belongs ahead of STATE's current "Next up" head, add it to "Next up".
-6. `$PL lint`; fix any ERROR. If the working tree has no other changes, commit as
+6. `$PL lint`. Fix any ERROR your edit caused. Errors that were already there (a stale snapshot,
+   say) aren't this skill's job: leave them and name them in your reply. If the working tree has no
+   other changes, commit as
    `docs(punchlist): add P-### <short>` (for several items, `add P-###, P-### …`). Otherwise leave the
    edit uncommitted and say so, so it isn't tangled into someone's in-progress work.
 
 Reply with one line: `P-### · <priority> · <section> — <text>`. If you judged it a duplicate, say
-which ID it duplicates.
+which ID it duplicates. If lint reported errors you didn't cause, add a line naming them and the
+skill that fixes them (usually `/punchlist:handoff`).
 
 Several items at once: repeat steps 2–4 for each, then report them as a list.
