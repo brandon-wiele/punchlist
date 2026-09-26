@@ -6,7 +6,7 @@
 
 ## Snapshot — 2026-09-26
 
-- **Branch:** `main` @ `a41bbfe`, clean. Sessions never push; the maintainer runs `just publish`.
+- **Branch:** `main` @ `279fd8a`, clean. Sessions never push; the maintainer runs `just publish`.
 - **Last shipped:** v0.6.0 (released locally, not yet published). Unreleased since: lint checks the
   docs index and archive links (P-004); item ages blame each file once (P-007); `:add`, `:review`
   and `:tidy` fix only lint errors they caused (P-008, P-015); README rewritten for adopters.
