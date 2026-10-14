@@ -16,9 +16,16 @@ Only STATE and PUNCHLIST are read whole. Everything else is looked up by ID. Cod
 from `punchlist status`, never typed by hand. Rulings go into the spec or the build-log entry, never
 STATE.
 
+**Related issues are part of the work.** Something you find while working belongs to it when it has
+the same root cause, is the same defect in sibling code, leaves your change incomplete or unsafe, or
+was caused by your change. Fix it in the same change, even if it predates you or an item already
+mentions it. If that would make the work large, ask the owner whether to fold it in; an unattended run
+files it `now` instead. Only work that doesn't belong goes to the backlog.
+
 **Handoff — before ending any session that changed code or priorities** (`/punchlist:handoff`):
-1. Anything deferred, discovered or half-done becomes a PUNCHLIST item with a new ID. "Recorded in
-   the spec" isn't enough: if a future session should act on it, it needs an ID.
+1. Anything still open when the session ends (deferred, discovered or half-done) becomes a PUNCHLIST
+   item with a new ID. "Recorded in the spec" isn't enough: if a future session should act on it, it
+   needs an ID.
 2. Anything finished moves its item to `punchlist-done.md` with `— DONE <date> (<sha>): …`.
 3. Anything merged gets a build-log index row plus a short entry.
 4. Refresh STATE's Snapshot, Next up and Recent milestones.

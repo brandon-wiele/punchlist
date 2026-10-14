@@ -57,6 +57,20 @@ refine its spec/plan, file the pieces as new P-items if useful, and report. That
   do it and call it out under "Needs you".
 - Commit with the ID in the message: `fix(area): … (<ID>)`.
 
+### Something else turns up while you work
+
+It **belongs to this unit** when any of these hold:
+- it has the same root cause, or is the same defect in a sibling function, call site or file;
+- the unit's change is wrong, incomplete or unsafe without it, including a reviewer's "follow-up" on
+  your own change;
+- the unit's change caused it.
+
+| What you found | Do |
+|---|---|
+| Belongs, and the unit stays within one session with it | Fix it on this branch, with tests, before retiring. That holds when it predates you, and when an open item already mentions it (retire that item too). Report it under "Folded in". |
+| Belongs, but would make the unit large (above) | **Interactive session:** ask the owner whether to fold it in: what it is, the size, your recommendation. Wait for the answer, then do what they chose. **Unattended run:** file it `now`, `from:` this ID. |
+| Doesn't belong | File it in §4 |
+
 ## 4. Retire it — a separate bookkeeping commit on the same branch
 
 Record the SHA of the last code commit (`git rev-parse --short HEAD`). Then:
@@ -71,7 +85,8 @@ Record the SHA of the last code commit (`git rev-parse --short HEAD`). Then:
 - **Umbrella item:** stays in PUNCHLIST until its last row closes, with no progress notes there.
   When the last row closes, retire it like any P-item.
 - **Partly done:** leave it open and add `(YYYY-MM-DD: <done> <sha or "uncommitted">; <remains>)`.
-- **Anything discovered, deferred, or needing the owner:** create a new item with
+- **Found work that doesn't belong to this unit, related work the owner chose to defer or that an
+  unattended run can't ask about (§3), or anything needing the owner:** create a new item with
   `$PL next-id --bump`, put it in the right section, and tag it `from: <this ID>`, plus
   `needs: <kind>` if only the owner can move it.
 - **STATE.md:** refresh the Snapshot with the last *code* commit's SHA (later bookkeeping commits
@@ -89,15 +104,18 @@ Then `git switch <base_branch> && git merge --ff-only <branch>` and delete the b
 
 1. **Did:** the ID, what changed, and the SHAs.
 2. **Verified:** the gates and their results, plus anything that can't be verified locally.
-3. **Retired / updated:** which bookkeeping entries moved or changed.
-4. **Needs you:** items tagged `needs:` or `needs-ruling:` this unit, and new P-items filed.
-5. **Next:** what the next invocation would pick.
+3. **Folded in:** related fixes beyond the item's text (§3), or "none".
+4. **Retired / updated:** which bookkeeping entries moved or changed.
+5. **Needs you:** items tagged `needs:` or `needs-ruling:` this unit, and new P-items filed, each
+   with why it isn't part of this unit.
+6. **Next:** what the next invocation would pick.
 
 ## Common mistakes
 
 | Mistake | Instead |
 |---|---|
-| Doing several items in one invocation | One unit, then report |
+| Doing several items in one invocation | One unit, then report. Related fixes (§3) are part of the unit |
+| Filing a sibling of the bug, or a gap in your own fix, as a new item | Fold it in, or ask if it's large (§3) |
 | Asking "continue?" or "what counts as done?" | The rules above answer it |
 | `<sha>` placeholders, or retiring before the gates pass | Commit the code first, then write the real SHA |
 | Deleting a done item | Move it to punchlist-done with the DONE line |

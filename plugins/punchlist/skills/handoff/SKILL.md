@@ -21,9 +21,9 @@ what to do next. Formats: `../../reference/formats.md`.
 
 ## 2. Apply the five handoff steps
 
-1. **Deferred, discovered or half-done → P-items.** Get each new ID from `$PL next-id --bump`. Tag it
-   `from:`, and `needs: decision|action` if only the owner can move it (formats.md criteria).
-   Half-done work gets a progress note on its existing item.
+1. **Still open → P-items.** Whatever is deferred, discovered or half-done as the session ends gets a
+   new ID from `$PL next-id --bump`. Tag it `from:`, and `needs: decision|action` if only the owner
+   can move it (formats.md criteria). Half-done work gets a progress note on its existing item.
 2. **Finished → retire.** Only if the work's commits passed the `.punchlist.yml` gates: run them now
    if this session didn't. A failing gate means it isn't done; record that in In flight. Move the item
    to `history/punchlist-done.md` under its section heading, followed by its own line
@@ -66,7 +66,8 @@ in In flight.
 Report in ≤ 10 lines:
 1. What was recorded.
 2. What was retired.
-3. New P-IDs.
+3. New P-IDs. Mark any that belong to this session's own work (same root cause, the same defect in
+   sibling code, a gap in its own change), so the owner can say "do it now".
 4. The top of Next up.
 5. What waits on the owner: the `needs` group of `$PL queue` (count and IDs). Suggest `/punchlist:interview` if it isn't empty.
 6. The lint result.

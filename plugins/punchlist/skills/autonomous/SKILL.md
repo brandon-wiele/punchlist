@@ -40,9 +40,9 @@ If there's no `.punchlist.yml`, stop and suggest `/punchlist:setup`.
    for its completion notification. Dispatch nothing else in the meantime.
 
    > Work one punchlist unit in `<project root>`: invoke the `punchlist:next` skill with argument
-   > `<ID>` and follow it exactly, through merge and bookkeeping. Rules for this run: never ask the
-   > user anything — if the unit needs the owner, tag it `needs:` as the skill says, commit the
-   > bookkeeping and stop; if a gate fails, don't retire, merge or switch branches — leave the work on
+   > `<ID>` and follow it exactly, through merge and bookkeeping. Rules for this run: it is an
+   > unattended run, so never ask the user anything — if the unit needs the owner, tag it `needs:` as
+   > the skill says, commit the bookkeeping and stop; if a gate fails, don't retire, merge or switch branches — leave the work on
    > the unit's branch and reply `outcome: failed`; never push, whatever `push:` says. Reply with only
    > these lines:
    > outcome: done | partial | split | skipped | failed
@@ -88,9 +88,10 @@ and go to the review and report.
    commit, dispatch one read-only reviewer subagent (use `superpowers:requesting-code-review` if
    it's available) with:
    > Review `git diff <START>..<base_branch>` in `<project root>`, unit by unit. Units: <one line
-   > each: ID — item text — code_sha>. For each unit, reply `<ID>: fine` or `<ID>: look at this —
-   > <why> (<file:line>)`. Look for correctness bugs, changes outside the item's scope, and tests
-   > that don't exercise the change. Don't edit anything.
+   > each: ID — item text — code_sha — new_items>. For each unit, reply `<ID>: fine` or `<ID>: look
+   > at this — <why> (<file:line>)`. Look for correctness bugs, changes unrelated to the item, new
+   > items that belonged in the unit (same root cause, the same defect in sibling code, or a gap in
+   > the unit's own change), and tests that don't exercise the change. Don't edit anything.
 
    The review is advisory. It never fixes, reverts or stops anything.
 3. If this session has a push-notification tool, send one line:

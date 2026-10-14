@@ -111,6 +111,8 @@ takes that item.
 One run is one unit of work: pick, build, run your checks, commit, merge locally, update the docs,
 report. If the item is too big for one sitting, it writes a plan and splits the work into new
 items instead. If an item needs your decision, it tags it and moves on rather than guessing.
+Related problems it finds on the way, such as the same bug elsewhere or a gap in its own fix, get
+fixed in the same run. If that would make the run much bigger, it asks you first.
 
 ### `/punchlist:add <what>` — capture something
 
@@ -134,8 +136,9 @@ priorities.
 /punchlist:handoff
 ```
 
-It turns anything deferred or discovered into backlog items, closes what was finished, updates the
-build log and refreshes STATE, so tomorrow's session starts from an accurate picture.
+It turns anything still open into backlog items, and marks the ones that belong to the session's own
+work so you can say "do it now". It also closes what was finished, updates the build log and
+refreshes STATE, so tomorrow's session starts from an accurate picture.
 
 ### `/punchlist:interview` — answer what's waiting on you
 
