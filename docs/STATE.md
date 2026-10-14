@@ -8,7 +8,7 @@
 
 - **Branch:** `main` @ `4861a6f`, clean. Sessions never push; the maintainer runs `just publish`.
 - **Last shipped:** v0.8.0 — P-016: related issues are folded into the unit (or asked about when
-  large) instead of filed. Released locally, not yet published (`just publish`). Adopters pick up
+  large) instead of filed. Published 2026-10-14. Adopters pick up
   the new CLAUDE.md block by re-running `/punchlist:setup`.
 - **In flight:** nothing active. The eval-suite work in progress is parked on branch
   `punchlist/P-001-eval-slice-1` (six cases written, none run); P-014 picks it up.
