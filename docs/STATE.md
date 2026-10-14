@@ -6,7 +6,7 @@
 
 ## Snapshot — 2026-10-14
 
-- **Branch:** `main` @ `639350c`, clean. Sessions never push; the maintainer runs `just publish`.
+- **Branch:** `main` @ `4861a6f`, clean. Sessions never push; the maintainer runs `just publish`.
 - **Last shipped:** P-016 — related issues are folded into the unit (or asked about when large)
   instead of filed; unreleased, so `just release` is needed before sessions see it. Before that,
   v0.7.3 (directory URLs, README Privacy), published.
