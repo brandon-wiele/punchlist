@@ -7,12 +7,29 @@
 
 | Date | Milestone | Merge | Spec / plan |
 |---|---|---|---|
+| 2026-10-14 | Related issues are folded in, not filed | `639350c` | none (small; P-016) |
 | 2026-09-26 | Lint checks the docs index and archive links | `3d83f3d` | none (small) |
 | 2026-09-26 | Brief skill | `082395b` | design agreed in session (no spec) |
 | 2026-09-25 | Interview + autonomous skills | `b9d6544` | `docs/specs/2026-09-25-interview-autonomous-design.md` · `docs/plans/2026-09-25-interview-autonomous.md` |
 | 2026-09-23 | v0.4.0 — first public release | `v0.4.0` | `docs/design.md` |
 
 ## Entries
+
+### 2026-10-14 — Related issues are folded in, not filed — merged `639350c`
+no spec (small; P-016)
+- **Why:** in three adopting projects' transcripts, agents filed nine items for work that belonged to
+  the unit (the same bug in sibling code, gaps in their own fix, regressions they caused), citing
+  "one unit", "pre-existing" and the handoff rule. The owner pushed most back, and chose "now" whenever asked.
+- **What shipped:** `:next` §3 says what belongs to a unit and folds it in; related work that would
+  make the unit large is asked about (interactive) or filed `now` (unattended). Reports gain "Folded
+  in" and a reason per filed item. The CLAUDE.md block gets the rule; its handoff step is end-of-session
+  only. `:autonomous` marks units unattended; `:handoff` marks filed items that belong to the session.
+- **Rulings:** ask before folding in large related work (owner); the managed block changes too, so
+  adopters get it on the next `/punchlist:setup` re-run (owner). A flaky unrelated test that fails a
+  gate doesn't belong to the unit.
+- **Verification:** dry runs, current vs new text: sibling bug folded 4/5 → 5/5; large related work
+  asked 0/5 → 5/5; unrelated issues filed 5/5 → 5/5; own-fix gap folded 5/5 → 3/3; unattended
+  large work filed `now` with a reason 3/3.
 
 ### 2026-09-26 — Lint checks the docs index and archive links — merged `3d83f3d`
 no spec (small; P-004)

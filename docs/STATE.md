@@ -4,13 +4,12 @@
 > is *position only*: no backlog (PUNCHLIST) and no build narrative
 > ([`history/build-log.md`](history/build-log.md)). Keep it under ~120 lines.
 
-## Snapshot — 2026-09-26
+## Snapshot — 2026-10-14
 
-- **Branch:** `main` @ `eb4b4f8`, clean. Sessions never push; the maintainer runs `just publish`.
-- **Last shipped:** v0.7.3 (directory URLs, README Privacy), v0.7.2 (plugin icon) and v0.7.1 (author, marketplace owner and LICENSE now
-  Brandon Wiele) on v0.7.0 — lint checks the docs index and archive links, faster item ages, `:add`/
-  `:review`/`:tidy` fix only lint errors they caused, README rewritten for adopters, directory-ready
-  plugin metadata. Released locally, not yet published (`just publish`).
+- **Branch:** `main` @ `639350c`, clean. Sessions never push; the maintainer runs `just publish`.
+- **Last shipped:** P-016 — related issues are folded into the unit (or asked about when large)
+  instead of filed; unreleased, so `just release` is needed before sessions see it. Before that,
+  v0.7.3 (directory URLs, README Privacy), published.
 - **In flight:** nothing active. The eval-suite work in progress is parked on branch
   `punchlist/P-001-eval-slice-1` (six cases written, none run); P-014 picks it up.
 - **Environment:** installed locally as `punchlist@punchlist`. Installs are cached per version (see Verbs).
@@ -60,6 +59,7 @@ Nothing is workable: everything left is `later` or waits on the owner — see `p
 
 ## Recent milestones (last ~8 — full index in [`history/build-log.md`](history/build-log.md))
 
+- 2026-10-14 — P-016: related issues are folded in, not filed (`:next`, `:autonomous`, `:handoff`, CLAUDE.md block)
 - 2026-09-26 — v0.7.0: lint checks the docs index and archive links (P-004), README for adopters
 - 2026-09-26 — P-010: /punchlist:brief, a plain-language catch-up, and `punchlist recent` (v0.6.0)
 - 2026-09-25 — P-006: /punchlist:interview and /punchlist:autonomous, needs: marker, punchlist queue (v0.5.0)

@@ -32,6 +32,11 @@ followed by its own indented line `  — DONE YYYY-MM-DD (<sha>): <what shipped>
 - **P-004** · later · `lint` could check that `docs/README.md` (tidy's index) lists every current doc
   and that no current doc links into the archive.
   — DONE 2026-09-26 (3d83f3d): lint warns on docs missing from the index (folder links count) and on current docs linking into the archive.
+- **P-016** · now · Agents file P-items for directly related issues instead of fixing them in the
+  current unit or asking the owner to fold them in. Add a fold-in rule to `:next`, `:autonomous`,
+  `:handoff` and the installed CLAUDE.md block; report what was folded in.
+  Ruling 2026-10-14: interactive sessions ask before folding in big related work; block changes too.
+  — DONE 2026-10-14 (639350c): related issues are folded in (or asked about when large); dry runs: sibling fix 4/5 → 5/5, large-related asked 0/5 → 5/5, unrelated still filed 5/5.
 
 ## Features
 
