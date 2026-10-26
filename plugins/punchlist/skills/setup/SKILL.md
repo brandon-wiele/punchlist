@@ -160,7 +160,7 @@ for Seed and Adopt, **offer** the two follow-ups. Don't run either unasked.
   superseded ones with the reason, and files rewrites as P-items. You approve the table before
   anything moves."
 - **`/punchlist:review`**: "A whole-codebase review would give the punchlist a real starting audit.
-  It runs parallel read-only reviewers and takes a while."
+  It reads the whole codebase and takes a while."
 
 Setup itself never archives or rewrites existing docs. It only reads them, links the current ones
 from Orientation, and migrates backlog-style files.

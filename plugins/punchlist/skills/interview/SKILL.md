@@ -42,9 +42,9 @@ edits.
 
 ## 3. Research before asking
 
-For each `decision` and `ruling` entry, dispatch a **read-only** analysis subagent (the `Plan` agent
-if available, otherwise general-purpose). Send them all in one message so they run in parallel. Give
-each the entry's JSON, the project root and this brief:
+Research every `decision` and `ruling` entry read-only before asking anything. How you do it (in this
+session or through subagents, one by one or in parallel) is your call. Each entry's research works
+from its JSON, the project root and this brief:
 
 > Research this backlog item so the owner can decide it in under a minute. Read what it links to
 > (spec, plan, code, the code-review finding), its history (`git log -S` / `--grep`), and any
@@ -57,8 +57,8 @@ each the entry's JSON, the project root and this brief:
 > - **Recommendation:** one option, and why, in one or two sentences.
 > - **After:** for each option, what happens next (what gets built, filed or unblocked).
 
-Brief `action` and `triage` entries yourself, from the item text and the `git log` of its lines. No
-subagent.
+Brief `action` and `triage` entries from the item text and the `git log` of its lines; they need no
+deeper research.
 
 ## 4. Ask in batches
 
@@ -130,7 +130,7 @@ Anything else an answer spawns (new follow-up work, a new question) becomes a ne
 | Leading with "P-012: …" or pasting the item text | Lead with the plain-language headline; the ID is a footnote |
 | Options without cost or reversibility | Every option says what it costs and how hard it is to undo |
 | A decision or ruling with no recommendation | Always recommend one; the owner can overrule it |
-| Asking before researching | Research every decision first, in parallel |
+| Asking before researching | Research every decision first |
 | One question per call when several are ready | Batch up to 4 |
 | Recording everything at the end | Record each batch before asking the next |
 | Tagging anything uncertain `needs: decision` | Apply the formats.md criteria; decide the rest and record a ruling |

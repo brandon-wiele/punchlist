@@ -161,7 +161,7 @@ Use it when the backlog has clear, self-contained items and you'd like them done
 /punchlist:autonomous 3
 ```
 
-It works items one at a time, each in a fresh sub-agent, checks the repo after every item, and stops
+It works items one at a time, checks the repo after every item, and stops
 on the first failure, when only your decisions remain, or after `max` items (default 10). It ends
 with a review of everything it did and never pushes. You can tell it to stop at any time; it
 finishes the current item first.
@@ -174,7 +174,7 @@ Use it when you adopt punchlist on an existing project, or every few months.
 /punchlist:review
 ```
 
-Several read-only reviewers look at the codebase in parallel. Findings land in `docs/code-review/`
+It reviews the codebase read-only, area by area. Findings land in `docs/code-review/`
 with a short "fix first" list, and one backlog item points at that list so `/punchlist:next` can
 work through it.
 

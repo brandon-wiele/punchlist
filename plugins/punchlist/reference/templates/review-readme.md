@@ -1,6 +1,6 @@
 # Code review — {{date}} (whole codebase, `{{base_branch}}` @ `{{sha}}`)
 
-A static, read-only review by {{reviewer_count}} parallel reviewers, one per area. Every finding was
+A static, read-only review of {{reviewer_count}} areas. Every finding was
 checked against the code path it describes; `plausible` marks the ones a reviewer couldn't fully
 confirm.
 

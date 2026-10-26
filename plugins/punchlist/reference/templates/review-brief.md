@@ -1,14 +1,14 @@
 # Reviewer brief — {{project}} whole-codebase review ({{date}})
 
-You are one of {{reviewer_count}} parallel reviewers doing a whole-codebase review (not a diff review)
+You are reviewing one of {{reviewer_count}} areas in a whole-codebase review (not a diff review)
 of the repo at `{{root}}`. Read the root `CLAUDE.md` first: its rules and non-negotiables are review
 criteria. Then read `{{docs}}/STATE.md` for current position.{{extra_context}}
 
 ## Hard rules
 - **Read-only on the codebase.** The ONLY file you may create or edit is your assigned output file.
 - Don't run anything that writes a database, migrates, deploys or pushes. Reading, grep and
-  `git log`/`git blame` are enough. Don't run the full test suite; other reviewers are running at the
-  same time.
+  `git log`/`git blame` are enough. Don't run the full test suite; it is slow and can clash with other
+  work in the checkout.
 - Don't flag these deliberate choices: {{do_not_flag}}
 
 ## What to look for (priority order)

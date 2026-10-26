@@ -1,15 +1,15 @@
 ---
 name: autonomous
-description: Use when asked to work through the punchlist / backlog unattended — "run autonomously", "grind the backlog", "keep doing /punchlist:next until done" — in a project that has a .punchlist.yml. Works units one at a time through subagents until nothing workable is left, a unit fails, or only items that need the owner remain.
+description: Use when asked to work through the punchlist / backlog unattended — "run autonomously", "grind the backlog", "keep doing /punchlist:next until done" — in a project that has a .punchlist.yml. Works units one at a time until nothing workable is left, a unit fails, or only items that need the owner remain.
 argument-hint: "[max-units]"
 ---
 
 # Work the backlog unattended
 
-You are the orchestrator. Subagents do the work, one `/punchlist:next` unit each, **strictly one at a
-time**: every unit merges to the base branch and rewrites PUNCHLIST, STATE and the ID counter, so two
-at once would collide. You never read or write code. Your context holds queue JSON, unit reports and
-one review. Formats: `../../reference/formats.md` (relative to this skill's base directory).
+Work the backlog one `/punchlist:next` unit at a time, **strictly one at a time**: every unit merges
+to the base branch and rewrites PUNCHLIST, STATE and the ID counter, so two at once would collide.
+Whether you run a unit in this session or hand it to a subagent is your call. Formats:
+`../../reference/formats.md` (relative to this skill's base directory).
 
 **Script:** `PL="${CLAUDE_PLUGIN_ROOT}/bin/punchlist"`. If that variable is empty, use
 `<this skill's base directory>/../../bin/punchlist`. `<docs>` and `base_branch` come from
@@ -36,15 +36,15 @@ If there's no `.punchlist.yml`, stop and suggest `/punchlist:setup`.
    `workable` entry. If it is the same ID as the previous unit and that unit made no progress
    (`code_sha: -` and outcome `skipped` or `partial`), stop: it isn't converging. An ID that comes
    back after a unit that committed code — an umbrella working its Fix-first rows — is progress.
-2. Dispatch **one** general-purpose subagent **in the background** with the prompt below, then wait
-   for its completion notification. Dispatch nothing else in the meantime.
+2. Run the unit, and start nothing else until it finishes. Whoever works it follows these rules (if
+   you delegate it, this is the prompt):
 
    > Work one punchlist unit in `<project root>`: invoke the `punchlist:next` skill with argument
    > `<ID>` and follow it exactly, through merge and bookkeeping. Rules for this run: it is an
    > unattended run, so never ask the user anything — if the unit needs the owner, tag it `needs:` as
-   > the skill says, commit the bookkeeping and stop; if a gate fails, don't retire, merge or switch branches — leave the work on
-   > the unit's branch and reply `outcome: failed`; never push, whatever `push:` says. Reply with only
-   > these lines:
+   > the skill says, commit the bookkeeping and end the unit; if a gate fails, don't retire, merge or
+   > switch branches — leave the work on the unit's branch and end the unit with `outcome: failed`;
+   > never push, whatever `push:` says. End with a report of only these lines:
    > outcome: done | partial | split | skipped | failed
    > id: <ID>
    > code_sha: <sha or ->
@@ -54,12 +54,13 @@ If there's no `.punchlist.yml`, stop and suggest `/punchlist:setup`.
    > needs_you: <IDs with one line each, or ->
    > notes: <≤ 3 lines>
 
-3. Run the checks in §3, then go back to step 1. A reply that is missing, cut off or doesn't follow
-   the line format counts as `outcome: failed`.
+   Ending a unit, for any reason, returns to this loop; it doesn't end the run.
 
-While a unit runs, the owner may message you. If they say to stop, let the unit finish, run the
-checks, and stop with the reason "stopped by owner". Answer anything else from what you already know;
-don't dispatch anything new.
+3. Run the checks in §3, then go back to step 1. A unit whose report is missing, cut off or doesn't
+   follow the line format counts as `outcome: failed`.
+
+If the owner asks to stop mid-unit, let the unit finish, run the checks, and stop with the reason
+"stopped by owner". Answer anything else without starting new work.
 
 ## 3. Check after every unit — any failure stops the run
 
@@ -85,8 +86,7 @@ and go to the review and report.
    it parks an item this run touched. Run `$PL lint`. If anything changed, commit it as
    `docs(punchlist): autonomous run — <n> units`.
 2. **Review the run.** If `git log --oneline START..<base_branch> -- . ':(exclude)<docs>'` lists any
-   commit, dispatch one read-only reviewer subagent (use `superpowers:requesting-code-review` if
-   it's available) with:
+   commit, review it read-only against this brief:
    > Review `git diff <START>..<base_branch>` in `<project root>`, unit by unit. Units: <one line
    > each: ID — item text — code_sha — new_items>. For each unit, reply `<ID>: fine` or `<ID>: look
    > at this — <why> (<file:line>)`. Look for correctness bugs, changes unrelated to the item, new
@@ -118,8 +118,7 @@ the `needs` line when nothing needs the owner.
 
 | Mistake | Instead |
 |---|---|
-| Two units at once | Strictly serial; wait for each completion before the next dispatch |
-| Reading code, or finishing a unit yourself | Subagents work; you pick, check and report |
+| Two units at once | Strictly serial; finish each unit and its checks before starting the next |
 | `/punchlist:handoff` after each unit | `:next` already retires and refreshes STATE; you run compact and lint once at the end |
 | Cleaning up after a failed unit | Stop and report; the owner decides |
 | Pushing | Never, whatever `push:` says |

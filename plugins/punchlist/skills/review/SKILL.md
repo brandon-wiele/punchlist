@@ -6,7 +6,7 @@ argument-hint: "[focus or areas]"
 
 # Whole-codebase review into `<docs>/code-review/`
 
-Parallel read-only reviewers, one per area. Each writes one findings file. Then an index with a
+A read-only review split into areas, each with one findings file. Then an index with a
 generated roll-up, themes, a Fix-first table, and one umbrella PUNCHLIST item. Formats:
 `../../reference/formats.md` § Code review files. Templates: `../../reference/templates/review-*.md`.
 
@@ -35,16 +35,14 @@ Give each area:
 Also build a **do-not-flag** list from CLAUDE.md and the owner's recorded decisions: deliberate
 choices a reviewer would otherwise report.
 
-## 3. Brief and dispatch
+## 3. Brief and review
 
-Fill `review-brief.md` once and write it to the session's scratch area. It's shared by all
-reviewers. Then dispatch one subagent per area **in a single message, in parallel, in the
-background**. Each prompt is: "Read <brief path> and follow it exactly", plus the area key, prefix,
-output path (`<docs>/code-review/NN-<slug>.md`), scope paths, and focus bullets. Use a capable model.
-Stay within the session's subagent guideline, so merge areas if needed.
+Fill `review-brief.md` once and write it to the session's scratch area. Every area is reviewed
+against it, with the area key, prefix, output path (`<docs>/code-review/NN-<slug>.md`), scope paths
+and focus bullets. How you run the areas (in this session or through subagents, one by one or in
+parallel) is your call.
 
-While they run, do nothing that conflicts with them. When each finishes, note its severity counts and
-top items. Don't read whole files.
+When each area is done, note its severity counts and top items.
 
 ## 4. Index
 
