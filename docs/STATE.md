@@ -4,12 +4,11 @@
 > is *position only*: no backlog (PUNCHLIST) and no build narrative
 > ([`history/build-log.md`](history/build-log.md)). Keep it under ~120 lines.
 
-## Snapshot — 2026-10-14
+## Snapshot — 2026-10-26
 
-- **Branch:** `main` @ `4861a6f`, clean. Sessions never push; the maintainer runs `just publish`.
-- **Last shipped:** v0.8.0 — P-016: related issues are folded into the unit (or asked about when
-  large) instead of filed. Published 2026-10-14. Adopters pick up
-  the new CLAUDE.md block by re-running `/punchlist:setup`.
+- **Branch:** `main` @ `1bb0625`, clean. Sessions never push; the maintainer runs `just publish`.
+- **Last shipped:** `1bb0625` (unreleased) — skills leave subagent use to the model. Before that,
+  v0.8.0 (P-016, related issues folded in), published 2026-10-14.
 - **In flight:** nothing active. The eval-suite work in progress is parked on branch
   `punchlist/P-001-eval-slice-1` (six cases written, none run); P-014 picks it up.
 - **Environment:** installed locally as `punchlist@punchlist`. Installs are cached per version (see Verbs).
@@ -59,6 +58,7 @@ Nothing is workable: everything left is `later` or waits on the owner — see `p
 
 ## Recent milestones (last ~8 — full index in [`history/build-log.md`](history/build-log.md))
 
+- 2026-10-26 — skills leave subagent use to the model (`:autonomous`, `:interview`, `:review`); unreleased
 - 2026-10-14 — v0.8.0: P-016, related issues are folded in, not filed (`:next`, `:autonomous`, `:handoff`, CLAUDE.md block)
 - 2026-09-26 — v0.7.0: lint checks the docs index and archive links (P-004), README for adopters
 - 2026-09-26 — P-010: /punchlist:brief, a plain-language catch-up, and `punchlist recent` (v0.6.0)

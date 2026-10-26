@@ -7,6 +7,7 @@
 
 | Date | Milestone | Merge | Spec / plan |
 |---|---|---|---|
+| 2026-10-26 | Subagent use left to the model | `1bb0625` | none (small) |
 | 2026-10-14 | Related issues are folded in, not filed | `639350c` | none (small; P-016) |
 | 2026-09-26 | Lint checks the docs index and archive links | `3d83f3d` | none (small) |
 | 2026-09-26 | Brief skill | `082395b` | design agreed in session (no spec) |
@@ -14,6 +15,18 @@
 | 2026-09-23 | v0.4.0 — first public release | `v0.4.0` | `docs/design.md` |
 
 ## Entries
+
+### 2026-10-26 — Subagent use left to the model — merged `1bb0625`
+no spec (small)
+- **Why:** current models don't need to be told when to delegate. The skills hard-wired it:
+  `:autonomous` made the session an orchestrator that never read code, `:interview` sent research to
+  parallel `Plan` agents, and `:review` sent one background subagent per area.
+- **What shipped:** those three skills, the review templates, `:setup` and the README no longer steer
+  toward or away from subagents. Each says how to run the work is the model's call. The unit rules in
+  `:autonomous` read the same inline or delegated, and ending a unit returns to the loop.
+- **Rulings:** keep the correctness constraints (strictly serial units, read-only reviews and research).
+- **Verification:** `just check`, plus a read-through for leftover steering and steps that only work in
+  one mode. No with/without dry run.
 
 ### 2026-10-14 — Related issues are folded in, not filed — merged `639350c`
 no spec (small; P-016)
