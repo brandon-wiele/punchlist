@@ -6,7 +6,7 @@
 
 ## Snapshot — 2026-10-26
 
-- **Branch:** `main` @ `1bb0625`, clean. Sessions never push; the maintainer runs `just publish`.
+- **Branch:** `main` @ `78f8a41`, clean. Sessions never push; the maintainer runs `just publish`.
 - **Last shipped:** `1bb0625` (unreleased) — skills leave subagent use to the model. Before that,
   v0.8.0 (P-016, related issues folded in), published 2026-10-14.
 - **In flight:** nothing active. The eval-suite work in progress is parked on branch
